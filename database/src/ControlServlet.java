@@ -27,6 +27,7 @@ public class ControlServlet extends HttpServlet {
     private PeopleDAO peopleDAO;
     private UserDAO userDAO; 
     private FollowDAO followDAO; 
+    private PostDAO postDAO; 
  
     public void init(){
         peopleDAO = new PeopleDAO(); 
@@ -34,6 +35,8 @@ public class ControlServlet extends HttpServlet {
         try {
 			userDAO = new UserDAO();
 			followDAO = new FollowDAO();
+			postDAO = new PostDAO(); 
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -63,10 +66,7 @@ public class ControlServlet extends HttpServlet {
             	break; 
             case "/createUser":
             	createUser(request, response);
-            	break; 
-            case "/getUser":
-            	getUser(request, response);
-            	break; 
+            	break;
             case "/initializeDatabase":
             	initializeDatabase(request, response); 
             	break;
@@ -98,29 +98,30 @@ public class ControlServlet extends HttpServlet {
     }
     
 
-	private void getUser(HttpServletRequest request, HttpServletResponse response) throws SQLException {
-		String username = userDAO.getUser("kkapoor@email.com");
-		System.out.println("username: " + username); 
-		
-	}
-
 	private void showHome(HttpServletRequest request, HttpServletResponse response)
 			throws SQLException, IOException, ServletException {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("Home.jsp");       
         dispatcher.forward(request, response);
-		
 	}
 
 	private void initializeDatabase(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
 		 followDAO.dropTable();
+		 postDAO.dropTable();
 		 userDAO.dropTable();
+		 
+		 
 		 int rowsCreated = userDAO.createTable();
 		 int rowsCreatedFollow = followDAO.createTable();
+		 int rowsCreatedPost = postDAO.createTable(); 
+		 
 		 userDAO.fillTable(); 
 		 followDAO.fillTable(); 
+		 postDAO.fillTable(); 
+		 
 		  
-		 System.out.println("rows created: " + rowsCreated);
-		 System.out.println("rows created: " + rowsCreatedFollow);
+		 System.out.println("rows created in users table: " + rowsCreated);
+		 System.out.println("rows created in follows table: " + rowsCreatedFollow);
+		 System.out.println("rows created in Posts table: " + rowsCreatedPost);
 		 response.sendRedirect("home"); 
 		
 	}
@@ -136,17 +137,15 @@ public class ControlServlet extends HttpServlet {
         String usernameInput = request.getParameter("username");
         String passwordInput = request.getParameter("password");
         
-        // check if user exists in DB
-        
         User user = userDAO.getUserByUsername(usernameInput); 
          
-        if( user == null) { // invalid user
+        if( user == null) { // user not found
         	System.out.print("null");
         	RequestDispatcher dispatcher = request.getRequestDispatcher("Login.jsp");
             request.setAttribute("loginError", "Invalid username or password. Try again.");	
             dispatcher.forward(request, response);
         }
-        else if (!passwordInput.equals(user.password)) {
+        else if (!passwordInput.equals(user.password)) { // incorrect password
         	System.out.println("pw");
         	System.out.println("password typed:  " + passwordInput); 
         	System.out.println( user.toString() );
@@ -179,7 +178,7 @@ public class ControlServlet extends HttpServlet {
         System.out.println("password: " + password + ", confirmPass: " + confirmPassword);
         
         
-        if( !password.equals(confirmPassword)){
+        if( !password.equals(confirmPassword)){ 
         	RequestDispatcher dispatcher = request.getRequestDispatcher("Signup.jsp");
             request.setAttribute("passwordError", "Passwords did not match. Try again.");
             request.setAttribute("username", username);
@@ -190,8 +189,8 @@ public class ControlServlet extends HttpServlet {
             dispatcher.forward(request, response); 
             
         }
-        else if ( userDAO.getUserByUsername(username) == null ){ 
-        	
+        else if ( userDAO.getUserByUsername(username) != null ){ 
+        	System.out.println("gender: " + gender); 
         	RequestDispatcher dispatcher = request.getRequestDispatcher("Signup.jsp");
             request.setAttribute("usernameInvalidError", "That username is taken. Try another.");
             request.setAttribute("password", password);
