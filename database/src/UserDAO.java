@@ -96,6 +96,8 @@ public class UserDAO {
     	connect_func();  
     	statement = connect.createStatement();
     	
+    	
+    	String sql0 = "INSERT INTO Users(username, password) VALUES('root', 'pass1234')"; 
     	String sql1 =  "INSERT INTO Users(username, password, firstName, lastName, gender, birthday) VALUES('jhalpert@email.com', 'pass',  'Jim', 'Halpert' , 'M', '2008-11-11')";
     	String sql2 = "INSERT INTO Users(username, password, firstName, lastName, gender, birthday) VALUES('mscott@email.com', 'pass',  'Michael', 'Scott' , 'M', '1970-2-10')";
     	String sql3 = "INSERT INTO Users(username, password, firstName, lastName, gender, birthday) VALUES('dschrute@email.com', 'pass',  'Dwight', 'Schrute' , 'M', '1967-5-19')"; 
@@ -107,6 +109,8 @@ public class UserDAO {
     	String sql9 = "INSERT INTO Users(username, password, firstName, lastName, gender, birthday) VALUES('shudson@email.com', 'pass',  'Stanley', 'Hudson' , 'M', '1979-5-11')"; 
     	String sql10 = "INSERT INTO Users(username, password, firstName, lastName, gender, birthday) VALUES('kkapoor@email.com', 'pass',  'Kelly', 'Kapoor' , 'M', '1967-4-9')"; 
     	
+    	
+    	boolean rowInserted0 = statement.executeUpdate(sql0) > 0;
     	boolean rowInserted1 = statement.executeUpdate(sql1) > 0;
     	boolean rowInserted2 =statement.executeUpdate(sql2) > 0;
     	boolean rowInserted3 =statement.executeUpdate(sql3) > 0;
@@ -118,7 +122,7 @@ public class UserDAO {
     	boolean rowInserted9 =statement.executeUpdate(sql9) > 0;
     	boolean rowInserted10 =statement.executeUpdate(sql10) > 0;
     	
-    	 return ( rowInserted1 && rowInserted2 && rowInserted3 && rowInserted4 && rowInserted5 
+    	 return ( rowInserted0 && rowInserted1 && rowInserted2 && rowInserted3 && rowInserted4 && rowInserted5 
     			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted10 ); 
     }
     
@@ -164,33 +168,6 @@ public class UserDAO {
 
         return user; 
 
-    }
-    
-    public People getPeople(int id) throws SQLException {
-    	People people = null;
-        String sql = "SELECT * FROM student WHERE id = ?";
-         
-        connect_func();
-         
-        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
-        preparedStatement.setInt(1, id);
-         
-        ResultSet resultSet = preparedStatement.executeQuery();
-         
-        if (resultSet.next()) {
-            String name = resultSet.getString("name");
-            String address = resultSet.getString("address");
-            String status = resultSet.getString("status");
-             
-            people = new People(id, name, address, status);
-        }
-         
-        resultSet.close();
-        statement.close();
-         
-        return people;
-    }
-     
-          
+    }       
 
 }

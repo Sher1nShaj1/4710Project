@@ -7,7 +7,8 @@
 </head>
 <body>
     <div align="center">
-            <form action="initializeDatabase" method="post">
+     <c:if test="${username.equals('root')}">
+            		    <form action="initializeDatabase" method="post">
         <table border="1" cellpadding="5">
             <tr>
                 <td colspan="2" align="center">
@@ -16,6 +17,11 @@
             </tr>
         </table>
         </form>
+     </c:if>
+     
+     
+     
+        
     </div>   
 </body>
 </html>

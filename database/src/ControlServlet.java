@@ -24,18 +24,24 @@ import java.sql.PreparedStatement;
  */
 public class ControlServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private PeopleDAO peopleDAO;
     private UserDAO userDAO; 
     private FollowDAO followDAO; 
     private PostDAO postDAO; 
- 
+    private ImageDAO imageDAO;
+    private CommentsDAO commentsDAO; 
+    private LikesDAO likesDAO; 
+    private TagsDAO tagsDAO; 
+    
     public void init(){
-        peopleDAO = new PeopleDAO(); 
  
         try {
 			userDAO = new UserDAO();
 			followDAO = new FollowDAO();
-			postDAO = new PostDAO(); 
+			postDAO = new PostDAO();
+			imageDAO = new ImageDAO(); 
+			commentsDAO = new CommentsDAO(); 
+			likesDAO = new LikesDAO(); 
+			tagsDAO = new TagsDAO(); 
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -73,30 +79,22 @@ public class ControlServlet extends HttpServlet {
             case "/home":
             	showHome(request, response); 
             	break; 
-            case "/new":
-                showNewForm(request, response);
-                break;
-            case "/insert":
-            	insertPeople(request, response);
-                break;
-            case "/delete":
-            	deletePeople(request, response);
-                break;
-            case "/edit":
-                showEditForm(request, response);
-                break;
-            case "/update":
-            	updatePeople(request, response);
-                break;
-            default:          	
-            	listPeople(request, response);           	
-                break;
+            case "/rootHome":
+            	showRootHome(request, response); 
+            	break; 
+           
             }
         } catch (SQLException ex) {
             throw new ServletException(ex);
         }
     }
     
+
+	private void showRootHome(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		RequestDispatcher dispatcher = request.getRequestDispatcher("RootHome.jsp");       
+        dispatcher.forward(request, response);
+	}
 
 	private void showHome(HttpServletRequest request, HttpServletResponse response)
 			throws SQLException, IOException, ServletException {
@@ -105,23 +103,41 @@ public class ControlServlet extends HttpServlet {
 	}
 
 	private void initializeDatabase(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
+		 commentsDAO.dropTable();  
 		 followDAO.dropTable();
 		 postDAO.dropTable();
+		 likesDAO.dropTable();
+		 tagsDAO.dropTable();
 		 userDAO.dropTable();
+		 imageDAO.dropTable();
 		 
 		 
-		 int rowsCreated = userDAO.createTable();
+		 
+		 int rowsCreatedUsers = userDAO.createTable();
+		 int rowsCreatedImages = imageDAO.createTable();
 		 int rowsCreatedFollow = followDAO.createTable();
 		 int rowsCreatedPost = postDAO.createTable(); 
+		 int rowsCreatedComments = commentsDAO.createTable(); 
+		 int rowsCreatedLikes = likesDAO.createTable(); 
+		 int rowsCreatedTags = tagsDAO.createTable(); 
+		 
 		 
 		 userDAO.fillTable(); 
+		 imageDAO.fillTable();
 		 followDAO.fillTable(); 
 		 postDAO.fillTable(); 
+		 commentsDAO.fillTable();
+		 likesDAO.fillTable(); 
+		 tagsDAO.fillTable(); 
 		 
 		  
-		 System.out.println("rows created in users table: " + rowsCreated);
+		 System.out.println("rows created in comments table: " + rowsCreatedComments);		 
+		 System.out.println("rows created in users table: " + rowsCreatedUsers);
 		 System.out.println("rows created in follows table: " + rowsCreatedFollow);
 		 System.out.println("rows created in Posts table: " + rowsCreatedPost);
+		 System.out.println("rows created in Images table: " + rowsCreatedImages);
+		 System.out.println("rows created in Likes table: " + rowsCreatedLikes);
+		 System.out.println("rows created in Tags table: " + rowsCreatedTags);
 		 response.sendRedirect("home"); 
 		
 	}
@@ -139,24 +155,20 @@ public class ControlServlet extends HttpServlet {
         
         User user = userDAO.getUserByUsername(usernameInput); 
          
-        if( user == null) { // user not found
+        if( user == null || !passwordInput.equals(user.password) ) { // user not found
         	System.out.print("null");
         	RequestDispatcher dispatcher = request.getRequestDispatcher("Login.jsp");
             request.setAttribute("loginError", "Invalid username or password. Try again.");	
             dispatcher.forward(request, response);
         }
-        else if (!passwordInput.equals(user.password)) { // incorrect password
-        	System.out.println("pw");
-        	System.out.println("password typed:  " + passwordInput); 
-        	System.out.println( user.toString() );
-        	RequestDispatcher dispatcher = request.getRequestDispatcher("Login.jsp");
-            request.setAttribute("loginError", "Invalid username or password. Try again.");
-            dispatcher.forward(request, response);
-        }
         else {
         	System.out.println(user.username + " " + passwordInput); 
         	System.out.println( user.toString() );
-            response.sendRedirect("home"); 
+        	RequestDispatcher dispatcher = request.getRequestDispatcher("Home.jsp");
+        	if(user.getUsername().contentEquals("root")) {
+        		request.setAttribute("username", "root");
+        	}
+        	dispatcher.forward(request, response); 
         }  
     }
 
@@ -210,68 +222,5 @@ public class ControlServlet extends HttpServlet {
         
      
 	}
-
-    
-	private void listPeople(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
-        List<People> listPeople = peopleDAO.listAllPeople();
-        request.setAttribute("listPeople", listPeople);       
-        RequestDispatcher dispatcher = request.getRequestDispatcher("PeopleList.jsp");       
-        dispatcher.forward(request, response);
-    }
- 
-    // to insert a people
-    private void showNewForm(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        RequestDispatcher dispatcher = request.getRequestDispatcher("InsertPeopleForm.jsp");
-        dispatcher.forward(request, response);
-    }
- 
-    // to present an update form to update an  existing Student
-    private void showEditForm(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
-        People existingPeople = peopleDAO.getPeople(id);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("EditPeopleForm.jsp");
-        request.setAttribute("people", existingPeople);
-        dispatcher.forward(request, response); // The forward() method works at server side, and It sends the same request and response objects to another servlet.
- 
-    }
- 
-    // after the data of a people are inserted, this method will be called to insert the new people into the DB
-    // 
-    private void insertPeople(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException {
-        String name = request.getParameter("name");
-        String address = request.getParameter("address");
-        String status = request.getParameter("status");
-        People newPeople = new People(name, address, status);
-        peopleDAO.insert(newPeople);
-        response.sendRedirect("list");  // The sendRedirect() method works at client side and sends a new request
-    }
- 
-    private void updatePeople(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
-        
-        System.out.println(id);
-        String name = request.getParameter("name");
-        String address = request.getParameter("address");
-        String status = request.getParameter("status");
-        
-        System.out.println(name);
-        
-        People people = new People(id,name, address, status);
-        peopleDAO.update(people);
-        response.sendRedirect("list");
-    }
- 
-    private void deletePeople(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
-        //People people = new People(id);
-        peopleDAO.delete(id);
-        response.sendRedirect("list"); 
-    }
 
 }
