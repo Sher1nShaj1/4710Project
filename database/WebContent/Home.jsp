@@ -6,6 +6,7 @@
     <title>Home</title>
 </head>
 <body>
+	<h1>Home</h1>
     <div align="center">
      <c:if test="${username.equals('root')}">
             		    <form action="initializeDatabase" method="post">

@@ -70,16 +70,12 @@ public class FollowDAO {
              gotTable = resultSet.getString("Tables_in_testdb (Follows)");
         }
     	if( !gotTable.isEmpty()) {
-    		System.out.println("Follows Table exists!");
     		String sql1 = "ALTER TABLE Follows DROP FOREIGN KEY userID"; 
     		String sql2 = "ALTER TABLE Follows DROP FOREIGN KEY followerID";
     		String sql3 = "DROP TABLE IF EXISTS Follows";
     		statement.executeUpdate(sql1);
     		statement.executeUpdate(sql2);
     		statement.executeUpdate(sql3);
-    	}
-    	else {
-    		System.out.println("Table does not exist"); 
     	}
     	
     	

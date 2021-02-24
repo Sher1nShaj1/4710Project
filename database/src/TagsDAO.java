@@ -70,16 +70,11 @@ public class TagsDAO {
              gotTable = resultSet.getString("Tables_in_testdb (Tags)");
         }
     	if( !gotTable.isEmpty()) {
-    		System.out.println("Tags Table exists!");
     		String sql1 = "ALTER TABLE Tags DROP FOREIGN KEY fk_imgID3"; 
     		String sql3 = "DROP TABLE IF EXISTS Tags";
     		statement.executeUpdate(sql1);
     		statement.executeUpdate(sql3);
     	}
-    	else {
-    		System.out.println("Table does not exist"); 
-    	}
-    	
     	
     	String sql4 = "DROP TABLE IF EXISTS Tags";
     	statement.executeUpdate(sql4);

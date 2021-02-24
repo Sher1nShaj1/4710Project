@@ -70,16 +70,12 @@ public class LikesDAO {
              gotTable = resultSet.getString("Tables_in_testdb (Likes)");
         }
     	if( !gotTable.isEmpty()) {
-    		System.out.println("Likes Table exists!");
     		String sql1 = "ALTER TABLE Likes DROP FOREIGN KEY fk_userID2"; 
     		String sql2 = "ALTER TABLE Likes DROP FOREIGN KEY fk_imgID2";
     		String sql3 = "DROP TABLE IF EXISTS Likes";
     		statement.executeUpdate(sql1);
     		statement.executeUpdate(sql2);
     		statement.executeUpdate(sql3);
-    	}
-    	else {
-    		System.out.println("Table does not exist"); 
     	}
     	
     	

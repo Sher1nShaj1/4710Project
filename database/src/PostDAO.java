@@ -70,7 +70,6 @@ public class PostDAO {
              gotTable = resultSet.getString("Tables_in_testdb (Posts)");
         }
     	if( !gotTable.isEmpty()) {
-    		System.out.println("Posts Table exists!");
     		
     		String sql1 = "ALTER TABLE Posts DROP FOREIGN KEY fk_userID"; 
     		String sql2 = "ALTER TABLE Posts DROP FOREIGN KEY imgID";
@@ -78,9 +77,6 @@ public class PostDAO {
     		statement.executeUpdate(sql1);
     		statement.executeUpdate(sql2);
     		statement.executeUpdate(sql3);
-    	}
-    	else {
-    		System.out.println("Posts table does not exist"); 
     	}
     	
     	
@@ -96,7 +92,7 @@ public class PostDAO {
     			"        	imgID INT NOT NULL," + 
     			"        	postTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP," + 
     			"			CONSTRAINT fk_userID FOREIGN KEY (userID) REFERENCES Users(userID), " + 
-    			"			CONSTRAINT imgID FOREIGN KEY (imgID) REFERENCES Image(imgID)," + 
+    			"			CONSTRAINT imgID FOREIGN KEY (imgID) REFERENCES Images(imgID)," + 
     			"			PRIMARY KEY(userID, imgID))"; 
 
     	int rowsInserted = statement.executeUpdate(sql5);

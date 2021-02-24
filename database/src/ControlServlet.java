@@ -31,6 +31,7 @@ public class ControlServlet extends HttpServlet {
     private CommentsDAO commentsDAO; 
     private LikesDAO likesDAO; 
     private TagsDAO tagsDAO; 
+    private User currentUser; 
     
     public void init(){
  
@@ -42,6 +43,7 @@ public class ControlServlet extends HttpServlet {
 			commentsDAO = new CommentsDAO(); 
 			likesDAO = new LikesDAO(); 
 			tagsDAO = new TagsDAO(); 
+			currentUser = null; 
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -102,7 +104,9 @@ public class ControlServlet extends HttpServlet {
         dispatcher.forward(request, response);
 	}
 
-	private void initializeDatabase(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
+	private void initializeDatabase(HttpServletRequest request, HttpServletResponse response) 
+			throws SQLException, IOException, ServletException {
+		 
 		 commentsDAO.dropTable();  
 		 followDAO.dropTable();
 		 postDAO.dropTable();
@@ -130,15 +134,20 @@ public class ControlServlet extends HttpServlet {
 		 likesDAO.fillTable(); 
 		 tagsDAO.fillTable(); 
 		 
-		  
-		 System.out.println("rows created in comments table: " + rowsCreatedComments);		 
-		 System.out.println("rows created in users table: " + rowsCreatedUsers);
-		 System.out.println("rows created in follows table: " + rowsCreatedFollow);
-		 System.out.println("rows created in Posts table: " + rowsCreatedPost);
-		 System.out.println("rows created in Images table: " + rowsCreatedImages);
-		 System.out.println("rows created in Likes table: " + rowsCreatedLikes);
-		 System.out.println("rows created in Tags table: " + rowsCreatedTags);
-		 response.sendRedirect("home"); 
+//		 System.out.println("rows created in comments table: " + rowsCreatedComments);		 
+//		 System.out.println("rows created in users table: " + rowsCreatedUsers);
+//		 System.out.println("rows created in follows table: " + rowsCreatedFollow);
+//		 System.out.println("rows created in Posts table: " + rowsCreatedPost);
+//		 System.out.println("rows created in Images table: " + rowsCreatedImages);
+//		 System.out.println("rows created in Likes table: " + rowsCreatedLikes);
+//		 System.out.println("rows created in Tags table: " + rowsCreatedTags);
+		 
+		 
+		 RequestDispatcher dispatcher = request.getRequestDispatcher("Home.jsp");
+	     	if(currentUser!= null && currentUser.getUsername().contentEquals("root")) {
+	     		request.setAttribute("username", "root");
+	     	}
+	     	dispatcher.forward(request, response);
 		
 	}
 
@@ -153,19 +162,20 @@ public class ControlServlet extends HttpServlet {
         String usernameInput = request.getParameter("username");
         String passwordInput = request.getParameter("password");
         
-        User user = userDAO.getUserByUsername(usernameInput); 
+        currentUser = userDAO.getUserByUsername(usernameInput); 
+        
          
-        if( user == null || !passwordInput.equals(user.password) ) { // user not found
+        if( currentUser == null || !passwordInput.equals(currentUser.password) ) { // user not found
         	System.out.print("null");
         	RequestDispatcher dispatcher = request.getRequestDispatcher("Login.jsp");
             request.setAttribute("loginError", "Invalid username or password. Try again.");	
             dispatcher.forward(request, response);
         }
         else {
-        	System.out.println(user.username + " " + passwordInput); 
-        	System.out.println( user.toString() );
+        	System.out.println(currentUser.username + " " + passwordInput); 
+        	System.out.println( currentUser.toString() );
         	RequestDispatcher dispatcher = request.getRequestDispatcher("Home.jsp");
-        	if(user.getUsername().contentEquals("root")) {
+        	if(currentUser.getUsername().contentEquals("root")) {
         		request.setAttribute("username", "root");
         	}
         	dispatcher.forward(request, response); 

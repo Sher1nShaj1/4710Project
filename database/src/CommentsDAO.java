@@ -69,7 +69,6 @@ public class CommentsDAO {
             gotTable = resultSet.getString("Tables_in_testdb (Comments)");
         }
         if( !gotTable.isEmpty()) {
-    	        System.out.println("Comments Table exists!");
     		    String sql1 = "ALTER TABLE Comments DROP FOREIGN KEY fk_userID1"; 
     		    String sql2 = "ALTER TABLE Comments DROP FOREIGN KEY fk_imgID";
     		    String sql3 = "DROP TABLE IF EXISTS Comments";
@@ -77,9 +76,7 @@ public class CommentsDAO {
     		    statement.executeUpdate(sql2);
     		    statement.executeUpdate(sql3);
         }
-        else {
-    		System.out.println("Table does not exist"); 
-    }
+      
     	
     	
     String sql4 = "DROP TABLE IF EXISTS Comments";
