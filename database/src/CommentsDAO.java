@@ -62,20 +62,20 @@ public class CommentsDAO {
     public void dropTable() throws SQLException {
         connect_func();   
         statement = connect.createStatement();
-        String sql0 = "SHOW TABLES LIKE 'Comments'"; 
-        resultSet = statement.executeQuery(sql0);
-        String gotTable = ""; 
-        if (resultSet.next()) {
-            gotTable = resultSet.getString("Tables_in_testdb (Comments)");
-        }
-        if( !gotTable.isEmpty()) {
-    		    String sql1 = "ALTER TABLE Comments DROP FOREIGN KEY fk_userID1"; 
-    		    String sql2 = "ALTER TABLE Comments DROP FOREIGN KEY fk_imgID";
-    		    String sql3 = "DROP TABLE IF EXISTS Comments";
-    		    statement.executeUpdate(sql1);
-    		    statement.executeUpdate(sql2);
-    		    statement.executeUpdate(sql3);
-        }
+//        String sql0 = "SHOW TABLES LIKE 'Comments'"; 
+//        resultSet = statement.executeQuery(sql0);
+//        String gotTable = ""; 
+//        if (resultSet.next()) {
+//            gotTable = resultSet.getString("Tables_in_testdb (Comments)");
+//        }
+//        if( !gotTable.isEmpty()) {
+//    		    String sql1 = "ALTER TABLE Comments DROP FOREIGN KEY fk_userID1"; 
+//    		    String sql2 = "ALTER TABLE Comments DROP FOREIGN KEY fk_imgID";
+//    		    String sql3 = "DROP TABLE IF EXISTS Comments";
+//    		    statement.executeUpdate(sql1);
+//    		    statement.executeUpdate(sql2);
+//    		    statement.executeUpdate(sql3);
+//        }
       
     	
     	
@@ -86,13 +86,14 @@ public class CommentsDAO {
     public int createTable() throws SQLException{
         connect_func();
         statement = connect.createStatement();
-        String sql5 = "CREATE TABLE IF NOT EXISTS Comments( " +
-                  " userID INT NOT NULL, " +
-                  " imgID INT NOT NULL, " +
-                  " Description VARCHAR(1000), " +
-                  " CONSTRAINT fk_userID1 FOREIGN KEY (userID) REFERENCES Users(userID), " +
-                  " CONSTRAINT fk_imgID FOREIGN KEY (imgID) REFERENCES Images(imgID), " +
-                  " PRIMARY KEY(userID, imgID))" ;
+        String sql5 = "CREATE TABLE IF NOT EXISTS Comments (\r\n" + 
+        		"	email VARCHAR(100) NOT NULL,\r\n" + 
+        		"    imgID MEDIUMINT NOT NULL,\r\n" + 
+        		"    description VARCHAR(500),\r\n" + 
+        		"    PRIMARY KEY(email, imgID),\r\n" + 
+        		"    FOREIGN KEY(email) REFERENCES Users(email),\r\n" + 
+        		"    FOREIGN KEY(imgID) REFERENCES Images(imageID))";
+        
                   
         int rowsInserted = statement.executeUpdate(sql5);
         if (statement != null) {
@@ -105,17 +106,19 @@ public class CommentsDAO {
 	    connect_func();
 	    statement = connect.createStatement();
 	    
-	    String sql1 = "INSERT INTO Comments(userID, imgID, Description) VALUES(1, 2, 'Wow')";
-	    String sql2 = "INSERT INTO Comments(userID, imgID, Description) VALUES(4, 3, 'Beautiful')";
-	    String sql3 = "INSERT INTO Comments(userID, imgID, Description) VALUES(5, 7, 'Is this real')";
-	    String sql4 = "INSERT INTO Comments(userID, imgID, Description) VALUES(5, 6, 'stunning')";
-	    String sql5 = "INSERT INTO Comments(userID, imgID, Description) VALUES(2, 7, 'amazing')";
-	    String sql6 = "INSERT INTO Comments(userID, imgID, Description) VALUES(7, 6, 'breathtaking')";
-	    String sql7 = "INSERT INTO Comments(userID, imgID, Description) VALUES(4, 7,  'cannot believe my eyes')";
-	    String sql8 = "INSERT INTO Comments(userID, imgID, Description) VALUES(7, 10, 'where is this')";
-	    String sql9 = "INSERT INTO Comments(userID, imgID, Description) VALUES(5, 1, 'Did you take this')";
-	    String sql10 = "INSERT INTO Comments(userID, imgID, Description) VALUES(3, 6, 'no way')";
-	    
+
+		String sql1 = "INSERT INTO Comments(email, imgID, Description) VALUES('jhalpert@email.com', 2, 'Wow')"; 
+		String sql2 = "INSERT INTO Comments(email, imgID, Description) VALUES('mscott@email.com', 3, 'Beautiful')";
+		String sql3 = "INSERT INTO Comments(email, imgID, Description) VALUES('amartin@email.com', 7, 'Is this real')";
+		String sql4 = "INSERT INTO Comments(email, imgID, Description) VALUES('mscott@email.com', 6, 'stunning')";
+		String sql5 = "INSERT INTO Comments(email, imgID, Description) VALUES('jhalpert@email.com', 7, 'amazing')";
+		String sql6 = "INSERT INTO Comments(email, imgID, Description) VALUES('amartin@email.com', 6, 'breathtaking')";
+		String sql7 = "INSERT INTO Comments(email, imgID, Description) VALUES('mscott@email.com', 7,  'cannot believe my eyes')";
+		String sql8 = "INSERT INTO Comments(email, imgID, Description) VALUES('jhalpert@email.com', 3, 'where is this')";
+		String sql9 = "INSERT INTO Comments(email, imgID, Description) VALUES( 'abernard@email.com', 1, 'Did you take this')";
+		String sql10 = "INSERT INTO Comments(email, imgID, Description) VALUES( 'abernard@email.com', 6, 'no way')"; 
+			    
+	 
 	    boolean rowInserted1 = statement.executeUpdate(sql1) > 0;
     	boolean rowInserted2 =statement.executeUpdate(sql2) > 0;
     	boolean rowInserted3 =statement.executeUpdate(sql3) > 0;

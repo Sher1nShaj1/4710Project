@@ -26,7 +26,6 @@ public class ControlServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private UserDAO userDAO; 
     private FollowDAO followDAO; 
-    private PostDAO postDAO; 
     private ImageDAO imageDAO;
     private CommentsDAO commentsDAO; 
     private LikesDAO likesDAO; 
@@ -38,7 +37,6 @@ public class ControlServlet extends HttpServlet {
         try {
 			userDAO = new UserDAO();
 			followDAO = new FollowDAO();
-			postDAO = new PostDAO();
 			imageDAO = new ImageDAO(); 
 			commentsDAO = new CommentsDAO(); 
 			likesDAO = new LikesDAO(); 
@@ -82,7 +80,8 @@ public class ControlServlet extends HttpServlet {
             	showHome(request, response); 
             	break; 
             case "/rootHome":
-            	showRootHome(request, response); 
+            	showRootHome(request, response);
+            	
             	break; 
            
             }
@@ -107,32 +106,37 @@ public class ControlServlet extends HttpServlet {
 	private void initializeDatabase(HttpServletRequest request, HttpServletResponse response) 
 			throws SQLException, IOException, ServletException {
 		 
-		 commentsDAO.dropTable();  
-		 followDAO.dropTable();
-		 postDAO.dropTable();
-		 likesDAO.dropTable();
+
+
 		 tagsDAO.dropTable();
-		 userDAO.dropTable();
+		 commentsDAO.dropTable();  
+		 likesDAO.dropTable();
+		 followDAO.dropTable();
 		 imageDAO.dropTable();
-		 
+		 userDAO.dropTable();
+		  
 		 
 		 
 		 int rowsCreatedUsers = userDAO.createTable();
 		 int rowsCreatedImages = imageDAO.createTable();
-		 int rowsCreatedFollow = followDAO.createTable();
-		 int rowsCreatedPost = postDAO.createTable(); 
-		 int rowsCreatedComments = commentsDAO.createTable(); 
-		 int rowsCreatedLikes = likesDAO.createTable(); 
 		 int rowsCreatedTags = tagsDAO.createTable(); 
+		 int rowsCreatedComments = commentsDAO.createTable();
+		 int rowsCreatedLikes = likesDAO.createTable();
+		 int rowsCreatedFollow = followDAO.createTable();
+//	 
+
 		 
-		 
+//		 
 		 userDAO.fillTable(); 
 		 imageDAO.fillTable();
-		 followDAO.fillTable(); 
-		 postDAO.fillTable(); 
+		 tagsDAO.fillTable(); 
 		 commentsDAO.fillTable();
 		 likesDAO.fillTable(); 
-		 tagsDAO.fillTable(); 
+		 followDAO.fillTable(); 
+
+		 
+		 
+		 
 		 
 //		 System.out.println("rows created in comments table: " + rowsCreatedComments);		 
 //		 System.out.println("rows created in users table: " + rowsCreatedUsers);

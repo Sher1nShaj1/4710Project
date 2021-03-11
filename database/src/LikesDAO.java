@@ -63,20 +63,20 @@ public class LikesDAO {
     public void dropTable() throws SQLException {
     	connect_func();   
     	statement = connect.createStatement();
-    	String sql0 = "SHOW TABLES LIKE 'Likes'"; 
-    	resultSet = statement.executeQuery(sql0);
-    	String gotTable = ""; 
-    	if (resultSet.next()) {
-             gotTable = resultSet.getString("Tables_in_testdb (Likes)");
-        }
-    	if( !gotTable.isEmpty()) {
-    		String sql1 = "ALTER TABLE Likes DROP FOREIGN KEY fk_userID2"; 
-    		String sql2 = "ALTER TABLE Likes DROP FOREIGN KEY fk_imgID2";
-    		String sql3 = "DROP TABLE IF EXISTS Likes";
-    		statement.executeUpdate(sql1);
-    		statement.executeUpdate(sql2);
-    		statement.executeUpdate(sql3);
-    	}
+//    	String sql0 = "SHOW TABLES LIKE 'Likes'"; 
+//    	resultSet = statement.executeQuery(sql0);
+//    	String gotTable = ""; 
+//    	if (resultSet.next()) {
+//             gotTable = resultSet.getString("Tables_in_testdb (Likes)");
+//        }
+//    	if( !gotTable.isEmpty()) {
+//    		String sql1 = "ALTER TABLE Likes DROP FOREIGN KEY fk_userID2"; 
+//    		String sql2 = "ALTER TABLE Likes DROP FOREIGN KEY fk_imgID2";
+//    		String sql3 = "DROP TABLE IF EXISTS Likes";
+//    		statement.executeUpdate(sql1);
+//    		statement.executeUpdate(sql2);
+//    		statement.executeUpdate(sql3);
+//    	}
     	
     	
     	String sql4 = "DROP TABLE IF EXISTS Likes";
@@ -86,12 +86,14 @@ public class LikesDAO {
     public int createTable() throws SQLException{
         connect_func();
         statement = connect.createStatement();
-        String sql5 = "CREATE TABLE IF NOT EXISTS Likes( " +
-                  " userID Integer NOT NULL, " +
-                  " imgID Integer NOT NULL, " +
-                  " CONSTRAINT fk_userID2 FOREIGN KEY (userID) REFERENCES Users(userID), " +
-                  " CONSTRAINT fk_imgID2 FOREIGN KEY (imgID) REFERENCES Images(imgID), " +
-                  " PRIMARY KEY(userID, imgID)) ";
+        String sql5 = "CREATE TABLE IF NOT EXISTS Likes (\r\n" + 
+        		"	email VARCHAR(100) NOT NULL,\r\n" + 
+        		"    imgID MEDIUMINT NOT NULL, \r\n" + 
+        		"    likeDate DATE,\r\n" + 
+        		"    PRIMARY KEY(email, imgID),\r\n" + 
+        		"    FOREIGN KEY (email) REFERENCES Users(email),\r\n" + 
+        		"    FOREIGN KEY (imgID) REFERENCES Images(imageID))";     
+        
                   
         int rowsInserted = statement.executeUpdate(sql5);
         if (statement != null) {
@@ -104,17 +106,21 @@ public class LikesDAO {
 	    connect_func();
 	    statement = connect.createStatement();
 	    
-	    String sql1 = "INSERT INTO Likes(userID, imgID) VALUES(1, 7)";
-	    String sql2 = "INSERT INTO Likes(userID, imgID) VALUES(8, 2)";
-	    String sql3 = "INSERT INTO Likes(userID, imgID) VALUES(7, 3)"; 
-	    String sql4 = "INSERT INTO Likes(userID, imgID) VALUES(7, 5)";
-	    String sql5 = "INSERT INTO Likes(userID, imgID) VALUES(10, 5)";
-	    String sql6 = "INSERT INTO Likes(userID, imgID) VALUES(5, 9)";
-	    String sql7 = "INSERT INTO Likes(userID, imgID) VALUES(3, 4)";
-	    String sql8 = "INSERT INTO Likes(userID, imgID) VALUES(2, 8)";
-	    String sql9 = "INSERT INTO Likes(userID, imgID) VALUES(4, 5)";
-	    String sql10 = "INSERT INTO Likes(userID, imgID) VALUES(8, 10)";
 	    
+	    String sql1 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('jhalpert@email.com', 8,  '2007-7-11')";
+	    String sql2 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('cbratton@email.com', 2, '2014-7-11')";
+	    String sql3 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('kmalone@email.com', 3, '2013-7-05')";
+	    String sql4 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('kmalone@email.com', 5, '2007-7-11')";
+	    String sql5 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('pbeesly@email.com', 5, '2018-7-14')";
+	    String sql6 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('jhalpert@email.com', 9, '2021-7-27')";
+	    String sql7 = "INSERT INTO Likes(email, imgID,likeDate) VALUES('dschrute@email.com', 4, '2007-2-18')";
+	    String sql8 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('dschrute@email.com', 8, '2007-7-3')";
+	    String sql9 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('jhalpert@email.com', 5, '2007-10-11')";
+	    String sql10 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('pbeesly@email.com', 1, '2017-7-11')";
+	    
+
+	    
+	
 	    boolean rowInserted1 = statement.executeUpdate(sql1) > 0;
     	boolean rowInserted2 =statement.executeUpdate(sql2) > 0;
     	boolean rowInserted3 =statement.executeUpdate(sql3) > 0;

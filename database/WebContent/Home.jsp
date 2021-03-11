@@ -9,7 +9,7 @@
 	<h1>Home</h1>
     <div align="center">
      <c:if test="${username.equals('root')}">
-            		    <form action="initializeDatabase" method="post">
+    	<form action="initializeDatabase" method="post">
         <table border="1" cellpadding="5">
             <tr>
                 <td colspan="2" align="center">
@@ -17,8 +17,10 @@
                 </td>
             </tr>
         </table>
+        
         </form>
      </c:if>
+     
      
      
      

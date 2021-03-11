@@ -63,20 +63,20 @@ public class FollowDAO {
     public void dropTable() throws SQLException {
     	connect_func();   
     	statement = connect.createStatement();
-    	String sql0 = "SHOW TABLES LIKE 'Follows'"; 
-    	resultSet = statement.executeQuery(sql0);
-    	String gotTable = ""; 
-    	if (resultSet.next()) {
-             gotTable = resultSet.getString("Tables_in_testdb (Follows)");
-        }
-    	if( !gotTable.isEmpty()) {
-    		String sql1 = "ALTER TABLE Follows DROP FOREIGN KEY userID"; 
-    		String sql2 = "ALTER TABLE Follows DROP FOREIGN KEY followerID";
-    		String sql3 = "DROP TABLE IF EXISTS Follows";
-    		statement.executeUpdate(sql1);
-    		statement.executeUpdate(sql2);
-    		statement.executeUpdate(sql3);
-    	}
+//    	String sql0 = "SHOW TABLES LIKE 'Follows'"; 
+//    	resultSet = statement.executeQuery(sql0);
+//    	String gotTable = ""; 
+//    	if (resultSet.next()) {
+//             gotTable = resultSet.getString("Tables_in_testdb (Follows)");
+//        }
+//    	if( !gotTable.isEmpty()) {
+//    		String sql1 = "ALTER TABLE Follows DROP FOREIGN KEY userID"; 
+//    		String sql2 = "ALTER TABLE Follows DROP FOREIGN KEY followerID";
+//    		String sql3 = "DROP TABLE IF EXISTS Follows";
+//    		statement.executeUpdate(sql1);
+//    		statement.executeUpdate(sql2);
+//    		statement.executeUpdate(sql3);
+//    	}
     	
     	
     	String sql4 = "DROP TABLE IF EXISTS Follows";
@@ -86,12 +86,14 @@ public class FollowDAO {
     public int createTable() throws SQLException {
     	connect_func();   
     	statement = connect.createStatement();
-    	String sql5 = "CREATE TABLE IF NOT EXISTS Follows (" + 
-    			"        	userID INT NOT NULL," + 
-    			"        	followerID INT NOT NULL," + 
-    			"			CONSTRAINT userID FOREIGN KEY (userID) REFERENCES Users(userID)," + 
-    			"			CONSTRAINT followerID FOREIGN KEY (userID) REFERENCES Users(userID)," + 
-    			"			PRIMARY KEY(userID, followerID))" ; 
+    	String sql5 = "CREATE TABLE IF NOT EXISTS Follows (\r\n" + 
+    			"	followingEmail VARCHAR(100) NOT NULL,\r\n" + 
+    			"    followerEmail VARCHAR(100) NOT NULL,\r\n" + 
+    			"    PRIMARY KEY(followingEmail, followerEmail),\r\n" + 
+    			"    FOREIGN KEY(followingEmail) REFERENCES Users(email),\r\n" + 
+    			"    FOREIGN KEY (followerEmail) REFERENCES Users (email))"; 
+    	
+    	
     	
     	int rowsInserted = statement.executeUpdate(sql5);
     	 if (statement != null) {
@@ -104,17 +106,21 @@ public class FollowDAO {
     	connect_func();  
     	statement = connect.createStatement();
     	
-    	String sql1 = "INSERT INTO Follows(userID, followerID) VALUES(1, 2)";
-    	String sql2 = "INSERT INTO Follows(userID, followerID) VALUES(5, 7)";
-    	String sql3 = "INSERT INTO Follows(userID, followerID) VALUES(1, 5)"; 
-    	String sql4 = "INSERT INTO Follows(userID, followerID) VALUES(6, 8)"; 
-    	String sql5 = "INSERT INTO Follows(userID, followerID) VALUES(9, 1)"; 
-    	String sql6 = "INSERT INTO Follows(userID, followerID) VALUES(10, 2)"; 
-    	String sql7 = "INSERT INTO Follows(userID, followerID) VALUES(3, 10)";
-    	String sql8 = "INSERT INTO Follows(userID, followerID) VALUES(5, 2)"; 
-    	String sql9 = "INSERT INTO Follows(userID, followerID) VALUES(1, 8)"; 
-    	String sql10 = "INSERT INTO Follows(userID, followerID) VALUES(2, 2)"; 
+
+    	String sql1 = "INSERT INTO Follows(followingEmail, followerEmail) VALUES('jhalpert@email.com', 'cbratton@email.com')";
+    	String sql2 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('pbeesly@email.com', 'kmalone@email.com')";
+    	String sql3 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('shudson@email.com', 'abernard@email.com')";
+    	String sql4 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('kkapoor@email.com', 'amartin@email.com')";
+    	String sql5 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('kkapoor@email.com', 'abernard@email.com')";
+    	String sql6 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('shudson@email.com', 'pbeesly@email.com')";
+    	String sql7 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('amartin@email.com','mscott@email.com' )";
+    	String sql8 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('mscott@email.com', 'kmalone@email.com')";
+    	String sql9 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('cbratton@email.com', 'mscott@email.com')";
+    	String sql10 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('kkapoor@email.com', 'cbratton@email.com')"; 
+    	 
     	
+    	
+    		
     	boolean rowInserted1 = statement.executeUpdate(sql1) > 0;
     	boolean rowInserted2 =statement.executeUpdate(sql2) > 0;
     	boolean rowInserted3 =statement.executeUpdate(sql3) > 0;

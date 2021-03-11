@@ -63,18 +63,18 @@ public class TagsDAO {
     public void dropTable() throws SQLException {
     	connect_func();   
     	statement = connect.createStatement();
-    	String sql0 = "SHOW TABLES LIKE 'Tags'"; 
-    	resultSet = statement.executeQuery(sql0);
-    	String gotTable = ""; 
-    	if (resultSet.next()) {
-             gotTable = resultSet.getString("Tables_in_testdb (Tags)");
-        }
-    	if( !gotTable.isEmpty()) {
-    		String sql1 = "ALTER TABLE Tags DROP FOREIGN KEY fk_imgID3"; 
-    		String sql3 = "DROP TABLE IF EXISTS Tags";
-    		statement.executeUpdate(sql1);
-    		statement.executeUpdate(sql3);
-    	}
+//    	String sql0 = "SHOW TABLES LIKE 'Tags'"; 
+//    	resultSet = statement.executeQuery(sql0);
+//    	String gotTable = ""; 
+//    	if (resultSet.next()) {
+//             gotTable = resultSet.getString("Tables_in_testdb (Tags)");
+//        }
+//    	if( !gotTable.isEmpty()) {
+//    		String sql1 = "ALTER TABLE Tags DROP FOREIGN KEY fk_imgID3"; 
+//    		String sql3 = "DROP TABLE IF EXISTS Tags";
+//    		statement.executeUpdate(sql1);
+//    		statement.executeUpdate(sql3);
+//    	}
     	
     	String sql4 = "DROP TABLE IF EXISTS Tags";
     	statement.executeUpdate(sql4);
@@ -83,11 +83,12 @@ public class TagsDAO {
     public int createTable() throws SQLException{
         connect_func();
         statement = connect.createStatement();
-        String sql5 = "CREATE TABLE IF NOT EXISTS Tags( " +
-                  " Tag VARCHAR(20) NOT NULL, " +
-                  " imgID INT NOT NULL, " +
-                  " CONSTRAINT fk_imgID3 FOREIGN KEY (imgID) REFERENCES Images(imgID), " +
-                  " PRIMARY KEY(imgID, Tag)) ";
+        String sql5 = "CREATE TABLE IF NOT EXISTS Tags (\r\n" + 
+        		"	imgID MEDIUMINT NOT NULL,\r\n" + 
+        		"    tag VARCHAR(20) NOT NULL,\r\n" + 
+        		"    PRIMARY KEY (imgID, tag),\r\n" + 
+        		"    FOREIGN KEY(imgID) REFERENCES Images(imageID)\r\n" + 
+        		"); "; 
 
         int rowsInserted = statement.executeUpdate(sql5);
         if (statement != null) {
@@ -100,6 +101,8 @@ public class TagsDAO {
 	    connect_func();
 	    statement = connect.createStatement();
 	    
+	    
+	    
 	    String sql1 = "INSERT INTO Tags(Tag, imgID) VALUES('Sunset', 3)";
 	    String sql2 = "INSERT INTO Tags(Tag, imgID) VALUES('Twilight', 5)";
 	    String sql3 = "INSERT INTO Tags(Tag, imgID) VALUES('Dawn', 4)";
@@ -109,7 +112,7 @@ public class TagsDAO {
 	    String sql7 = "INSERT INTO Tags(Tag, imgID) VALUES('Mountains', 6)";
 	    String sql8 = "INSERT INTO Tags(Tag, imgID) VALUES('Sky', 2)";
 	    String sql9 = "INSERT INTO Tags(Tag, imgID) VALUES('Beautiful', 3)";
-	    String sql10 = "INSERT INTO Tags(Tag, imgID) VALUES('Panoramic',10)";
+	    String sql10 = "INSERT INTO Tags(Tag, imgID) VALUES('Panoramic',9)";
 	    
 	    boolean rowInserted1 = statement.executeUpdate(sql1) > 0;
     	boolean rowInserted2 =statement.executeUpdate(sql2) > 0;

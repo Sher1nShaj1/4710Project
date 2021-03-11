@@ -70,10 +70,16 @@ public class ImageDAO {
     public int createTable() throws SQLException{
         connect_func();
         statement = connect.createStatement();
-        String sql5 = "CREATE TABLE IF NOT EXISTS Images( " +
-                  " imgID INT AUTO_INCREMENT UNIQUE NOT NULL, " +
-                  " url VARCHAR(1000) NOT NULL, " +
-                  " description VARCHAR(1000)) ";
+        String sql5 = "CREATE TABLE IF NOT EXISTS Images (\r\n" + 
+        		"			imageID MEDIUMINT AUTO_INCREMENT NOT NULL,\r\n" + 
+        		"        	url VARCHAR(150) NOT NULL,\r\n" + 
+        		"        	description VARCHAR(100) NOT NULL,\r\n" + 
+        		"            postUser VARCHAR(100) NOT NULL, \r\n" + 
+        		"            postDate DATE,\r\n" + 
+        		"            postTime DATETIME,\r\n" + 
+        		"            PRIMARY KEY( imageID),\r\n" + 
+        		"            FOREIGN KEY (postUser) references Users(email))" ;
+        
         int rowsInserted = statement.executeUpdate(sql5);
         if (statement != null) {
                statement.close();
@@ -85,17 +91,19 @@ public class ImageDAO {
 	    connect_func();
 	    statement = connect.createStatement();
 	    
-	    String sql1 = "INSERT INTO Images(url, description) VALUES('https://www.everypixel.com/image-1848701391904308651','twilight')";
-	    String sql2 = "INSERT INTO Images(url, description) VALUES('https://www.everypixel.com/image-4605505135290939668','dusk')";
-	    String sql3 = "INSERT INTO Images(url, description) VALUES('https://www.everypixel.com/image-3903131704398778801','cloudscape')";
-	    String sql4 = "INSERT INTO Images(url, description) VALUES('https://www.everypixel.com/image-610426762433763266','horizon')";
-	    String sql5 = "INSERT INTO Images(url, description) VALUES('https://www.everypixel.com/image-1914246763255025051','mountains')";
-	    String sql6 = "INSERT INTO Images(url, description) VALUES('https://www.everypixel.com/image-2838789978965726950','sunbeam')";
-	    String sql7 = "INSERT INTO Images(url, description) VALUES('https://www.everypixel.com/image-1378098419373516446','blue reflection')";
-	    String sql8 = "INSERT INTO Images(url, description) VALUES('https://www.everypixel.com/image-15481317529490480435','snowcapped mountain')";
-	    String sql9 = "INSERT INTO Images(url, description) VALUES('https://www.everypixel.com/image-714408075288199227','beauty in nature')";
-	    String sql10 = "INSERT INTO Images(url, description) VALUES('https://www.everypixel.com/image-10169022796335635107','beauty in nature')";
+	    String sql0 = "INSERT INTO Images(url, description, postUser, postDate, postTime) VALUES('https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/sunset-quotes-21-1586531574.jpg','twilight', 'jhalpert@email.com', '2004-11-11' , '2004-11-11 04:23:44')"; 
+	    String sql1 = "INSERT INTO Images(url, description, postUser, postDate, postTime) VALUES('https://ogden_images.s3.amazonaws.com/www.observertoday.com/images/2020/08/29003327/SUNSET-scaled.jpg','dusk', 'mscott@email.com', '2012-5-11' , '2012-5-11 05:23:44')";
+		String sql2 = "INSERT INTO Images(url, description, postUser, postDate, postTime) VALUES('https://upload.wikimedia.org/wikipedia/commons/a/a4/Anatomy_of_a_Sunset-2.jpg','cloudscape', 'dschrute@email.com', '2004-5-11' , '2004-5-11 04:24:44')"; 
+		String sql3 = "INSERT INTO Images(url, description, postUser, postDate, postTime) VALUES('https://i.pinimg.com/originals/66/05/a1/6605a1be5ff2358644d11520ae4b77f8.jpg','horizon', 'pbeesly@email.com', '2003-8-11' , '2003-8-11 08:55:44')";
+		String sql4 = "INSERT INTO Images(url, description, postUser, postDate, postTime) VALUES('https://cdn.pixabay.com/photo/2016/09/07/11/37/tropical-1651426__340.jpg','mountains', 'cbratton@email.com', '2006-11-11' , '2006-11-11 23:23:35')";
+		String sql5 = "INSERT INTO Images(url, description, postUser, postDate, postTime) VALUES('https://earthsky.org/upl/2013/09/sunrise-red-sea-Graham-Telford-e1489764712368.jpg','sunbeam', 'kmalone@email.com', '2007-7-11' , '2007-7-11 12:21:44')";
+		String sql6 = "INSERT INTO Images(url, description, postUser, postDate, postTime)  VALUES('https://www.visitaparadise.com/wp-content/themes/yootheme/cache/sunset-d863fdd4.jpeg','blue reflection', 'amartin@email.com', '1999-1-6' , '1999-1-6 04:03:53')";
+		String sql7 = "INSERT INTO Images(url, description, postUser, postDate, postTime) VALUES('https://llandscapes-10674.kxcdn.com/wp-content/uploads/2015/01/6198521760_aa86027669_z.jpg','snowcapped mountain', 'amartin@email.com', '2020-11-23' , '2020-11-23 11:32:34')";
+		String sql8 = "INSERT INTO Images(url, description, postUser, postDate, postTime) VALUES('https://www.araioflight.com/wp-content/uploads/2019/12/Wild-Beautiful-sunset-in-Africa-with-animals-safari.jpg', 'safari', 'abernard@email.com', '2008-11-11' , '2008-11-11 04:23:24')"; 
+		String sql9 = "INSERT INTO Images(url, description, postUser, postDate, postTime)  VALUES('https://cdn3.dpmag.com/2019/10/shutterstock_1239834655.jpg','beauty in nature', 'abernard@email.com', '2019-11-02' , '2019-11-02 14:35:09')"; 
+			  
 	    
+		boolean rowInserted0 =statement.executeUpdate(sql0) > 0;
 	    boolean rowInserted1 = statement.executeUpdate(sql1) > 0;
     	boolean rowInserted2 =statement.executeUpdate(sql2) > 0;
     	boolean rowInserted3 =statement.executeUpdate(sql3) > 0;
@@ -105,10 +113,40 @@ public class ImageDAO {
     	boolean rowInserted7 =statement.executeUpdate(sql7) > 0;
     	boolean rowInserted8 =statement.executeUpdate(sql8) > 0;
     	boolean rowInserted9 =statement.executeUpdate(sql9) > 0;
-    	boolean rowInserted10 =statement.executeUpdate(sql10) > 0;
+    	
     	
     	 return ( rowInserted1 && rowInserted2 && rowInserted3 && rowInserted4 && rowInserted5 
-    			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted10 ); 
+    			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted0 ); 
 	}
 	
-}     
+} 
+
+
+
+
+/*
+
+get all iamges for a particular user db methods
+	- image data 
+	
+			SELECT url, description, postTime
+			FROM Images, Users
+			WHERE Users.email = 'jhalpert@email.com' && postUser = Users.email; 
+
+	- likes count for imgID
+	
+			SELECT  COUNT(Likes.email)
+			FROM Likes
+			WHERE imgID = 5;
+	
+	- tags
+	
+			SELECT tag 
+			FROM Tags
+			WHERE imgID = 5;
+			
+			
+image object class 
+*/
+
+

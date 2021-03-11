@@ -73,17 +73,16 @@ public class UserDAO {
     public int createTable() throws SQLException {
     	connect_func();   
     	statement = connect.createStatement();
-    	String sql2 = "CREATE TABLE IF NOT EXISTS Users( " +
-                  " userID INTEGER not NULL AUTO_INCREMENT, " +
-                  " username VARCHAR(20), " + 
-                  " password VARCHAR(50), " + 
-                  " firstName VARCHAR(20), " + 
-                  " lastName VARCHAR(20), " + 
-                  " gender ENUM(\"F\", \"M\"), " +
-                  " birthday DATE, " +
-                  " dailyLikeCount INT DEFAULT 0, " +
-                  " dailyPostCount INT DEFAULT 0, " +
-                  " PRIMARY KEY ( userID ))"; 
+    	String sql2 = "CREATE TABLE IF NOT EXISTS Users(" + 
+    			"	email VARCHAR(100) NOT NULL," + 
+    			"	password VARCHAR(20)," + 
+    			"	firstName VARCHAR(20),\r\n" + 
+    			"	lastName VARCHAR(20),\r\n" + 
+    			"	gender CHAR(1),\r\n" + 
+    			"	birthday DATE ,\r\n" + 
+    			"	numOfFollowers INT,\r\n" + 
+    			"	numOfFollowings INT,\r\n" + 
+    			"	PRIMARY KEY(email))" ;
     	
     	 int rowsInserted = statement.executeUpdate(sql2);
     	 if (statement != null) {
@@ -97,18 +96,18 @@ public class UserDAO {
     	statement = connect.createStatement();
     	
     	
-    	String sql0 = "INSERT INTO Users(username, password) VALUES('root', 'pass1234')"; 
-    	String sql1 =  "INSERT INTO Users(username, password, firstName, lastName, gender, birthday) VALUES('jhalpert@email.com', 'pass',  'Jim', 'Halpert' , 'M', '2008-11-11')";
-    	String sql2 = "INSERT INTO Users(username, password, firstName, lastName, gender, birthday) VALUES('mscott@email.com', 'pass',  'Michael', 'Scott' , 'M', '1970-2-10')";
-    	String sql3 = "INSERT INTO Users(username, password, firstName, lastName, gender, birthday) VALUES('dschrute@email.com', 'pass',  'Dwight', 'Schrute' , 'M', '1967-5-19')"; 
-    	String sql4 = "INSERT INTO Users(username, password, firstName, lastName, gender, birthday) VALUES('pbeesly@email.com', 'pass',  'Pam', 'Beesly' , 'F', '1979-11-11')";
-    	String sql5 = "INSERT INTO Users(username, password, firstName, lastName, gender, birthday) VALUES('cbratton@email.com', 'pass',  'Creed', 'Bratton' , 'M', '2008-11-17')";
-    	String sql6 = "INSERT INTO Users(username, password, firstName, lastName, gender, birthday) VALUES('kmalone@email.com', 'pass',  'Kevin', 'Malone' , 'M', '2008-6-11')"; 
-    	String sql7 = "INSERT INTO Users(username, password, firstName, lastName, gender, birthday) VALUES('amartin@email.com', 'pass',  'Angela', 'Martin' , 'F', '1967-8-6')"; 
-    	String sql8 = "INSERT INTO Users(username, password, firstName, lastName, gender, birthday) VALUES('abernard@email.com', 'pass',  'Andy', 'Bernard' , 'M', '2008-11-2')"; 
-    	String sql9 = "INSERT INTO Users(username, password, firstName, lastName, gender, birthday) VALUES('shudson@email.com', 'pass',  'Stanley', 'Hudson' , 'M', '1979-5-11')"; 
-    	String sql10 = "INSERT INTO Users(username, password, firstName, lastName, gender, birthday) VALUES('kkapoor@email.com', 'pass',  'Kelly', 'Kapoor' , 'M', '1967-4-9')"; 
-    	
+    	String sql0 = "INSERT INTO Users(email, password) VALUES('root', 'pass1234')"; 
+    	String sql1 = "INSERT INTO Users(email, password, firstName, lastName, gender, birthday, numOfFollowers, numOfFollowings) VALUES('jhalpert@email.com', 'pass',  'Jim', 'Halpert' , 'M', '1980-1-11', 446, 345)";  
+    	String sql2 = "INSERT INTO Users(email, password, firstName, lastName, gender, birthday, numOfFollowers, numOfFollowings) VALUES('mscott@email.com', 'pass',  'Michael', 'Scott' , 'M', '1970-2-10' , 234, 23456)"; 
+    	String sql3 = "INSERT INTO Users(email, password, firstName, lastName, gender, birthday, numOfFollowers, numOfFollowings) VALUES('dschrute@email.com', 'pass',  'Dwight', 'Schrute' , 'M', '1967-5-19', 56, 1)";
+    	String sql4 = "INSERT INTO Users(email, password, firstName, lastName, gender, birthday, numOfFollowers, numOfFollowings) VALUES('pbeesly@email.com', 'pass',  'Pam', 'Beesly' , 'F', '1979-11-11', 84, 346)";
+    	String sql5 = "INSERT INTO Users(email, password, firstName, lastName, gender, birthday, numOfFollowers, numOfFollowings) VALUES('cbratton@email.com', 'pass',  'Creed', 'Bratton' , 'M', '2008-11-17', 2436, 234)"; 
+    	String sql6 = "INSERT INTO Users(email, password, firstName, lastName, gender, birthday, numOfFollowers, numOfFollowings) VALUES('kmalone@email.com', 'pass',  'Kevin', 'Malone' , 'M', '2008-6-11', 2467, 4765)";
+    	String sql7 = "INSERT INTO Users(email, password, firstName, lastName, gender, birthday, numOfFollowers, numOfFollowings) VALUES('amartin@email.com', 'pass',  'Angela', 'Martin' , 'F', '1967-8-6', 245, 753)";
+    	String sql8 = "INSERT INTO Users(email, password, firstName, lastName, gender, birthday, numOfFollowers, numOfFollowings) VALUES('abernard@email.com', 'pass',  'Andy', 'Bernard' , 'M', '2008-11-2', 433, 345)"; 
+    	String sql9 = "INSERT INTO Users(email, password, firstName, lastName, gender, birthday, numOfFollowers, numOfFollowings) VALUES('shudson@email.com', 'pass',  'Stanley', 'Hudson' , 'M', '1979-5-11', 77, 45)";
+    	String sql10 = "INSERT INTO Users(email, password, firstName, lastName, gender, birthday, numOfFollowers, numOfFollowings) VALUES('kkapoor@email.com', 'pass',  'Kelly', 'Kapoor' , 'M', '1967-4-9', 958, 646)";
+
     	
     	boolean rowInserted0 = statement.executeUpdate(sql0) > 0;
     	boolean rowInserted1 = statement.executeUpdate(sql1) > 0;
@@ -171,3 +170,7 @@ public class UserDAO {
     }       
 
 }
+
+
+
+
