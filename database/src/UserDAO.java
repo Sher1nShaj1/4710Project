@@ -127,42 +127,47 @@ public class UserDAO {
     
     public boolean insert(User user) throws SQLException {
     	
-    	connect_func();         
-		String sql = "INSERT INTO Users(username, password, firstName, lastName, gender, birthday) VALUES(?, ?, ?, ?, ?, ?)"; 
+    	connect_func();   
+//    	INSERT INTO Users(email, password, firstName, lastName, gender, birthday, numOfFollowers, numOfFollowings) VALUES('jhalpert@email.com', 'pass',  'Jim', 'Halpert' , 'M', '1980-1-11', 446, 345); 
+
+		String sql = "INSERT INTO Users(email, password, firstName, lastName, gender, birthday, numOfFollowers, numOfFollowings) VALUES(?, ?, ?, ?, ?, ?, ?, ?)"; 
     	
 		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
-		preparedStatement.setString(1, user.username);
+		preparedStatement.setString(1, user.email);
 		preparedStatement.setString(2, user.password);
 		preparedStatement.setString(3, user.firstName);
 		preparedStatement.setString(4, user.lastName);
 		preparedStatement.setString(5, user.gender);
 		preparedStatement.setString(6, user.birthday);
+		preparedStatement.setInt(7, user.numOfFollowers);
+		preparedStatement.setInt(8, user.numOfFollowings);
+		
+		
 		
         boolean rowInserted = preparedStatement.executeUpdate() > 0;
         preparedStatement.close();
         return rowInserted;
     }  
     
-    public User getUserByUsername(String inputUsername) throws SQLException {
+    public User getUserByEmail(String inputEmail) throws SQLException {
     	connect_func();
     	statement = connect.createStatement();
-        String sql = "SELECT * FROM Users WHERE username = ?";
+        String sql = "SELECT * FROM Users WHERE email = ?";
         
         preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
-        preparedStatement.setString(1, inputUsername);
+        preparedStatement.setString(1, inputEmail);
         
         ResultSet resultSet = preparedStatement.executeQuery();
         User user = null; 
         if (resultSet.next()) {
-        	
-        	  int id = resultSet.getInt("userID");	 
-              String username = resultSet.getString("username");
+        		 
+              String email = resultSet.getString("email");
               String password = resultSet.getString("password");
               String firstName = resultSet.getString("firstName"); 
               String lastName = resultSet.getString("lastName");
               String gender = resultSet.getString("gender");
               String birthday = resultSet.getString("birthday"); 
-              user = new User(id, username, password, firstName, lastName, gender, birthday);    
+              user = new User(email, password, firstName, lastName, gender, birthday);    
         }
 
         return user; 

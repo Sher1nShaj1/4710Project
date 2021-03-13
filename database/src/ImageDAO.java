@@ -119,12 +119,66 @@ public class ImageDAO {
     			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted0 ); 
 	}
 	
+	public List<Image> getImagesPostedByUser(User user) throws SQLException {
+		List<Image> imageList = new ArrayList<Image>();        
+        String sql = String.format( "SELECT imageID, url, description, postTime\r\n" + 
+        							"FROM Images, Users\r\n" + 
+        							"WHERE Users.email = ? && postUser = Users.email");
+        
+        
+        System.out.println(sql); 
+        connect_func();      
+        
+        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+        preparedStatement.setString(1, user.email);
+        
+        ResultSet resultSet = preparedStatement.executeQuery();
+         
+        while (resultSet.next()) {
+//        	public Image(int imgID, String url, String description, User postUser, String postDate, String postTime) 
+        	
+            int imageID = resultSet.getInt("imageID");
+            String url = resultSet.getString("url");
+            String description = resultSet.getString("description");
+            String postTime = resultSet.getString("postTime");
+             
+            Image image = new Image(imageID, url, description, user, postTime); 
+            imageList.add(image);
+        }      
+        disconnect();        
+        return imageList;
+		
+	}
+		
 } 
 
 
 
 
 /*
+ 
+ 
+ connect_func();
+    	statement = connect.createStatement();
+        String sql = "SELECT  COUNT(Likes.email) as likesCount\r\n" + 
+        			"FROM Likes\r\n" + 
+        			"WHERE imgID = ?";
+        
+        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+        preparedStatement.setInt(1, imgID);
+        
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        int likesCount = -1; 
+        if (resultSet.next()) {
+        	  System.out.println("\n\n in likesDAO likesCount: " + likesCount); 
+              likesCount = resultSet.getInt("likesCount");     
+        }
+
+        return likesCount; 
+        
+        
+        
 
 get all iamges for a particular user db methods
 	- image data 

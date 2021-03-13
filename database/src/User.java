@@ -1,69 +1,96 @@
 
 
 public class User {
-	protected int id;
-	protected String username;
+	protected String email;
 	protected String password;
 	protected String firstName;
 	protected String lastName;
 	protected String gender;
-	protected String birthday; 
+	protected String birthday;
+	protected int numOfFollowers;
+	protected int numOfFollowings;
+	
+	
+/*
+ * 
+ * email VARCHAR(100) NOT NULL,
+	password VARCHAR(20),
+	firstName VARCHAR(20),
+	lastName VARCHAR(20),
+	gender CHAR(1),
+	birthday DATE ,
+	numOfFollowers INT,
+	numOfFollowings INT,	
+ */
     
  
     public User() {
     }
  
-    public User(int id) {
-        this.id=id;
-    }
-    
     
 
-	public User(String username, String password, String firstName, String lastName, String gender, String birthday) {
+	public User(String email, String password, String firstName, String lastName, String gender, String birthday,
+		int numOfFollowers, int numOfFollowings) {
+	super();
+	this.email = email;
+	this.password = password;
+	this.firstName = firstName;
+	this.lastName = lastName;
+	this.gender = gender;
+	this.birthday = birthday;
+	this.numOfFollowers = numOfFollowers;
+	this.numOfFollowings = numOfFollowings;
+	}
+	
+
+
+	public User(String email, String password, String firstName, String lastName, String gender, String birthday) {
 		super();
-		this.username = username;
+		this.email = email;
 		this.password = password;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.gender = gender;
 		this.birthday = birthday;
+		this.numOfFollowers = 0;
+		this.numOfFollowings = 0; 
 	}
 
-	public User(int id, String username, String password, String firstname, String lastname,
-			String gender, String birthday) {
-		super();
-		this.id = id;
-		this.username = username;
-		this.password = password;
-		this.firstName = firstname;
-		this.lastName = lastname;
-		this.gender = gender;
-		this.birthday = birthday;
-	}
-	
 
 
-	public User(String username, String password) {
-		super();
-		this.username = username;
-		this.password = password;
+	public String getEmail() {
+		return email;
 	}
 
-	public int getId() {
-		return id;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+
+
+	public int getNumOfFollowers() {
+		return numOfFollowers;
 	}
 
-	public String getUsername() {
-		return username;
+
+
+	public void setNumOfFollowers(int numOfFollowers) {
+		this.numOfFollowers = numOfFollowers;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+
+
+	public int getNumOfFollowings() {
+		return numOfFollowings;
 	}
+
+
+
+	public void setNumOfFollowings(int numOfFollowings) {
+		this.numOfFollowings = numOfFollowings;
+	}
+
+
 
 	public String getPassword() {
 		return password;
@@ -105,12 +132,18 @@ public class User {
 		this.birthday = birthday;
 	}
 
+
+
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", username=" + username + ", password=" + password + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", gender=" + gender + ", birthday=" + birthday + "]";
+		return "User [email=" + email + ", password=" + password + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", gender=" + gender + ", birthday=" + birthday + ", numOfFollowers=" + numOfFollowers
+				+ ", numOfFollowings=" + numOfFollowings + "]";
 	}
+	
+	
 
+	
 	
 
 }

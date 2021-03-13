@@ -23,10 +23,10 @@
             	
             </caption>        
             <tr>
-                <th>Username: </th>
+                <th>Email: </th>
                 <td>
-                    <input type="email" name="username" size="45"
-                            value="<c:out value='${username}' />"
+                    <input type="email" name="email" size="45"
+                            value="<c:out value='${email}' />"
                         />
                 </td>
             </tr>

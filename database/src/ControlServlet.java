@@ -10,6 +10,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -58,6 +59,7 @@ public class ControlServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getServletPath();
+        
         System.out.println(action);
         try {
             switch (action) {
@@ -79,9 +81,8 @@ public class ControlServlet extends HttpServlet {
             case "/home":
             	showHome(request, response); 
             	break; 
-            case "/rootHome":
-            	showRootHome(request, response);
-            	
+            case "/userProfile":
+            	showUserProfile(request, response); 
             	break; 
            
             }
@@ -91,23 +92,39 @@ public class ControlServlet extends HttpServlet {
     }
     
 
-	private void showRootHome(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	private void showUserProfile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
 		
-		RequestDispatcher dispatcher = request.getRequestDispatcher("RootHome.jsp");       
+		HttpSession session = request.getSession();
+        currentUser = (User) session.getAttribute("currentUser");
+        System.out.println(currentUser); 
+		List<Image> postedImages = imageDAO.getImagesPostedByUser(currentUser);
+		int likeCount = 0;
+		String tags = ""; 
+		
+		for(Image image: postedImages) {
+			likeCount = likesDAO.getLikesForImage(image.imgID);
+			tags = tagsDAO.getTagsForImage(image.imgID); 
+			image.setLikesCount(likeCount);
+			image.setTags(tags);
+		}
+		
+		RequestDispatcher dispatcher = request.getRequestDispatcher("UserProfile.jsp"); 
+		request.setAttribute("postedImages", postedImages);
         dispatcher.forward(request, response);
+		
 	}
+
 
 	private void showHome(HttpServletRequest request, HttpServletResponse response)
 			throws SQLException, IOException, ServletException {
+		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("Home.jsp");       
         dispatcher.forward(request, response);
 	}
 
 	private void initializeDatabase(HttpServletRequest request, HttpServletResponse response) 
 			throws SQLException, IOException, ServletException {
-		 
-
-
+		
 		 tagsDAO.dropTable();
 		 commentsDAO.dropTable();  
 		 likesDAO.dropTable();
@@ -123,35 +140,20 @@ public class ControlServlet extends HttpServlet {
 		 int rowsCreatedComments = commentsDAO.createTable();
 		 int rowsCreatedLikes = likesDAO.createTable();
 		 int rowsCreatedFollow = followDAO.createTable();
-//	 
+	 
 
 		 
-//		 
+		 
 		 userDAO.fillTable(); 
 		 imageDAO.fillTable();
 		 tagsDAO.fillTable(); 
 		 commentsDAO.fillTable();
 		 likesDAO.fillTable(); 
 		 followDAO.fillTable(); 
-
-		 
-		 
-		 
-		 
-//		 System.out.println("rows created in comments table: " + rowsCreatedComments);		 
-//		 System.out.println("rows created in users table: " + rowsCreatedUsers);
-//		 System.out.println("rows created in follows table: " + rowsCreatedFollow);
-//		 System.out.println("rows created in Posts table: " + rowsCreatedPost);
-//		 System.out.println("rows created in Images table: " + rowsCreatedImages);
-//		 System.out.println("rows created in Likes table: " + rowsCreatedLikes);
-//		 System.out.println("rows created in Tags table: " + rowsCreatedTags);
-		 
-		 
-		 RequestDispatcher dispatcher = request.getRequestDispatcher("Home.jsp");
-	     	if(currentUser!= null && currentUser.getUsername().contentEquals("root")) {
-	     		request.setAttribute("username", "root");
-	     	}
-	     	dispatcher.forward(request, response);
+		
+	 
+		 RequestDispatcher dispatcher = request.getRequestDispatcher("/home");
+	     dispatcher.forward(request, response);
 		
 	}
 
@@ -163,25 +165,28 @@ public class ControlServlet extends HttpServlet {
     
     private void loginUser(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
-        String usernameInput = request.getParameter("username");
+    	
+    	
+        String emailInput = request.getParameter("email");
         String passwordInput = request.getParameter("password");
+         
+        System.out.println("eamil: " + emailInput + " password: " + passwordInput); 
         
-        currentUser = userDAO.getUserByUsername(usernameInput); 
+        currentUser = userDAO.getUserByEmail(emailInput); 
         
          
         if( currentUser == null || !passwordInput.equals(currentUser.password) ) { // user not found
         	System.out.print("null");
         	RequestDispatcher dispatcher = request.getRequestDispatcher("Login.jsp");
-            request.setAttribute("loginError", "Invalid username or password. Try again.");	
+            request.setAttribute("loginError", "Invalid username or password. Try again.");
             dispatcher.forward(request, response);
         }
         else {
-        	System.out.println(currentUser.username + " " + passwordInput); 
+        	HttpSession session = request.getSession();
+            session.setAttribute("currentUser", currentUser);
+        	System.out.println(currentUser.getEmail() + " " + passwordInput); 
         	System.out.println( currentUser.toString() );
         	RequestDispatcher dispatcher = request.getRequestDispatcher("Home.jsp");
-        	if(currentUser.getUsername().contentEquals("root")) {
-        		request.setAttribute("username", "root");
-        	}
         	dispatcher.forward(request, response); 
         }  
     }
@@ -194,7 +199,7 @@ public class ControlServlet extends HttpServlet {
     
     private void createUser(HttpServletRequest request, HttpServletResponse response) 
     		throws SQLException, IOException, ServletException{
-    	String username = request.getParameter("username");
+    	String email = request.getParameter("email");
         String password = request.getParameter("password");
     	String confirmPassword = request.getParameter("confirmPassword");
         String firstName = request.getParameter("firstName");
@@ -207,7 +212,7 @@ public class ControlServlet extends HttpServlet {
         if( !password.equals(confirmPassword)){ 
         	RequestDispatcher dispatcher = request.getRequestDispatcher("Signup.jsp");
             request.setAttribute("passwordError", "Passwords did not match. Try again.");
-            request.setAttribute("username", username);
+            request.setAttribute("email", email);
             request.setAttribute("firstName", firstName);
             request.setAttribute("lastName", lastName);
             request.setAttribute("gender", gender);
@@ -215,7 +220,7 @@ public class ControlServlet extends HttpServlet {
             dispatcher.forward(request, response); 
             
         }
-        else if ( userDAO.getUserByUsername(username) != null ){ 
+        else if ( userDAO.getUserByEmail(email) != null ){ 
         	System.out.println("gender: " + gender); 
         	RequestDispatcher dispatcher = request.getRequestDispatcher("Signup.jsp");
             request.setAttribute("usernameInvalidError", "That username is taken. Try another.");
@@ -228,9 +233,12 @@ public class ControlServlet extends HttpServlet {
             dispatcher.forward(request, response);
         }
         else {
-        	User user = new User(username, password, firstName, lastName, gender, birthday); 
-        	userDAO.insert(user); 
-    	    System.out.println(user.toString()); 
+        	
+        	currentUser = new User(email, password, firstName, lastName, gender, birthday);
+        	HttpSession session = request.getSession();
+            session.setAttribute("currentUser", currentUser);
+        	userDAO.insert(currentUser); 
+    	    System.out.println(currentUser.toString()); 
             response.sendRedirect("home"); 
         }
         

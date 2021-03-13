@@ -7,8 +7,13 @@
 </head>
 <body>
 	<h1>Home</h1>
+	<p>
+     	Welcome! 
+     	User: ${sessionScope.currentUser.email}
+     </p>
+     
     <div align="center">
-     <c:if test="${username.equals('root')}">
+     <c:if test="${sessionScope.currentUser.email.equals('root')}">
     	<form action="initializeDatabase" method="post">
         <table border="1" cellpadding="5">
             <tr>
@@ -21,6 +26,9 @@
         </form>
      </c:if>
      
+     
+     
+  
      
      
      

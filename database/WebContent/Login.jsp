@@ -22,10 +22,10 @@
             		<p> ${loginError} </p>
             </c:if>       
             <tr>
-                <th>Username: </th>
+                <th>Email: </th>
                 <td>
-                    <input type="text" name="username" size="45"
-                            value="<c:out value='${username}' />"
+                    <input type="text" name="email" size="45"
+                            value="<c:out value='${email}' />"
                         />
                 </td>
             </tr>

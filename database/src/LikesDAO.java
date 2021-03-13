@@ -136,4 +136,31 @@ public class LikesDAO {
     			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted10 ); 
 	}
 	
-    }     
+	public int getLikesForImage(int imgID) throws SQLException {
+		connect_func();
+    	statement = connect.createStatement();
+        String sql = "SELECT  COUNT(Likes.email) as likesCount\r\n" + 
+        			"FROM Likes\r\n" + 
+        			"WHERE imgID = ?";
+        
+        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+        preparedStatement.setInt(1, imgID);
+        
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        int likesCount = -1; 
+        if (resultSet.next()) {
+        	  System.out.println("\n\n in likesDAO likesCount: " + likesCount); 
+              likesCount = resultSet.getInt("likesCount");     
+        }
+
+        return likesCount;    
+	}
+	
+	
+  } 
+
+
+
+
+

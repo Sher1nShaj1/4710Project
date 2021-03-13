@@ -11,21 +11,23 @@
 <title>User Profile</title>
 
  	<h1>User Profile</h1>
+ 	<p>User: ${sessionScope.currentUser.email}</p>
+ 	
  	<button type="button" onclick="alert('Hello world!')">Create New Post</button>
                   
                                  
     <div align="center">
-       
-        <table border="1" cellpadding="5">
+   	  <c:forEach var="image" items="${postedImages}">
+    	  <table style="margin-bottom:30px;" border="3" cellpadding="5">
         	<tr>
                 <td >
-                   User Name goes here.
+                   User: ${image.postUser.email}
                    <button style="float: right;" type="button" onclick="alert('Hello world!')">Edit</button>
                    <button style="float: right;" type="button" onclick="alert('Hello world!')">Delete</button>   
             </tr> 
             <tr>
                 <td colspan="3">
-                   <img src="https://cdn3.dpmag.com/2019/10/shutterstock_1239834655.jpg" alt="sunset" width="400" height="400">    
+                   <img src="${image.url}" alt="sunset" width="400" height="400">    
            
                 </td>
             </tr>
@@ -36,23 +38,28 @@
                
             </tr>
             <tr>
-                <td colspan="3">
-                    Description will go here.
+                <td  colspan="3">
+                    Description: ${image.description}
                 </td>
             </tr>
             <tr>
                 <td colspan="3">
-                    Tags will go here.
+                    Tags: ${image.tags}
                 </td>
             </tr>
 
             <tr>
 	              <td colspan="3">
-	                    Time posted will go here.
+	                 Time: ${image.postTime}
 	              </td>
             </tr>
           
-        </table>
+        	</table>
+        	
+         
+       </c:forEach>
+       
+        
     </div>   
     
 </head>

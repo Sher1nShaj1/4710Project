@@ -129,4 +129,24 @@ public class TagsDAO {
     			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted10 ); 
 	}
 	
+	public String getTagsForImage(int imgID) throws SQLException {
+		connect_func();
+    	statement = connect.createStatement();
+        String sql = "SELECT tag \r\n" + 
+        			"FROM Tags\r\n" + 
+        			"WHERE imgID = ?;";
+        
+        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+        preparedStatement.setInt(1, imgID);
+        
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        String tags = ""; 
+        while (resultSet.next()) { 
+              tags += "#" + resultSet.getString("tag") + " ";     
+        }
+
+        return tags;    
+	}
+	
     }     
