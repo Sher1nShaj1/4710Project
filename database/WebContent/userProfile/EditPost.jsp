@@ -7,53 +7,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="ISO-8859-1">
-<title>Create Post</title>
+	<meta charset="ISO-8859-1">
+	<title>Edit Post</title>
+	<style>
+	   input  {
+	    width: 600px;
+		}
+	</style>
 
-    <div align="center">
-            <form action="loginUser" method="post">
-        <table border="1" cellpadding="5">
+</head>
+<body>
+  <div align="center">
+            <form action="../editPost" method="post">
+            
+             <input type="hidden" name="imgID"
+	                            value="${image.imgID}"
+	                    />
+        <table border="1" cellpadding="40">
             <caption>
                 <h1>
-                        Create Post
+                        Edit Post
                 </h1>
             </caption>     
             <tr>
                 <th>Image URL: </th>
+                
                 <td>
-                    <input type="text" name="username" size="45"
-                            value="<c:out value='${url}' />"
+                    <input type="text" name="url" size= 100
+                            value="<c:out value='${image.url}' />"
                         />
                 </td>
             </tr>
             <tr>
                 <th>Tags: </th>
                 <td>
-                    <input type="text" name="tags" size="45"
-                            value="<c:out value='${tags}' />"
+                    <input type="text" name="tags"
+                            value="<c:out value='${image.tags}' />"
                     />
                 </td>
             </tr>
              <tr>
                 <th>Description: </th>
                 <td>
-                    <input type="text" name="description" size="45"
-                            value="<c:out value='${description}' />"
+                    <input type="text" name="description" 
+                            value="<c:out value='${image.description}' />"
                     />
                 </td>
             </tr>
             
             <tr>
                 <td colspan="2" align="center">
-                    <input type="submit" value="Post" />
+                    <input type="submit" value="Save Changes" />
                 </td>
             </tr>
         </table>
         </form>
     </div>   
-    
-</head>
-<body>
-
 </body>
 </html>

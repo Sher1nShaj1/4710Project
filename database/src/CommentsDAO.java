@@ -62,25 +62,9 @@ public class CommentsDAO {
     public void dropTable() throws SQLException {
         connect_func();   
         statement = connect.createStatement();
-//        String sql0 = "SHOW TABLES LIKE 'Comments'"; 
-//        resultSet = statement.executeQuery(sql0);
-//        String gotTable = ""; 
-//        if (resultSet.next()) {
-//            gotTable = resultSet.getString("Tables_in_testdb (Comments)");
-//        }
-//        if( !gotTable.isEmpty()) {
-//    		    String sql1 = "ALTER TABLE Comments DROP FOREIGN KEY fk_userID1"; 
-//    		    String sql2 = "ALTER TABLE Comments DROP FOREIGN KEY fk_imgID";
-//    		    String sql3 = "DROP TABLE IF EXISTS Comments";
-//    		    statement.executeUpdate(sql1);
-//    		    statement.executeUpdate(sql2);
-//    		    statement.executeUpdate(sql3);
-//        }
-      
-    	
-    	
-    String sql4 = "DROP TABLE IF EXISTS Comments";
-	statement.executeUpdate(sql4);
+   	
+	    String sql4 = "DROP TABLE IF EXISTS Comments";
+		statement.executeUpdate(sql4);
     }
     
     public int createTable() throws SQLException{
@@ -133,6 +117,19 @@ public class CommentsDAO {
     	 return ( rowInserted1 && rowInserted2 && rowInserted3 && rowInserted4 && rowInserted5 
     			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted10 );  
 	}
+	
+	  public boolean delete(int imgID) throws SQLException {
+	        String sql = "DELETE FROM Comments WHERE imgID = ? "; 
+	        connect_func();
+	         
+	        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+	        preparedStatement.setInt(1, imgID);
+	         
+	        boolean rowDeleted = preparedStatement.executeUpdate() > 0;
+	        preparedStatement.close();
+
+	        return rowDeleted;     
+	   }
 	
 	
 	

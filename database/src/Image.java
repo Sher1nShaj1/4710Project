@@ -41,6 +41,14 @@ public class Image {
 	
 
 
+	public Image(String url, String description, User postUser) {
+		super();
+		this.url = url;
+		this.description = description;
+		this.postUser = postUser;
+	}
+
+
 	public Image(int imgID, String url, String description, User postUser, String postTime) {
 		super();
 		this.imgID = imgID;
@@ -48,6 +56,26 @@ public class Image {
 		this.description = description;
 		this.postUser = postUser;
 		this.postTime = postTime;
+	}
+	
+	
+	public Image(int imgID, String url, String description, User postUser) {
+		super();
+		this.imgID = imgID;
+		this.url = url;
+		this.description = description;
+		this.postUser = postUser;
+	}
+
+
+	
+
+
+	public Image(int imgID, String url, String description) {
+		super();
+		this.imgID = imgID;
+		this.url = url;
+		this.description = description;
 	}
 
 
@@ -133,7 +161,7 @@ public class Image {
 
 	@Override
 	public String toString() {
-		return "Image [imgID=" + imgID + ", url=" + url + ", description=" + description + ", postUser=" + postUser.getEmail()
+		return "Image [imgID=" + imgID + ", url=" + url + ", description=" + description + ", postUser=" + postUser.email
 				+ ", postDate=" + postDate + ", postTime=" + postTime + "]";
 	} 
 	

@@ -9,6 +9,8 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Login</title>
+</head>
+<body>
 
     <div align="center">
             <form action="loginUser" method="post">
@@ -46,9 +48,5 @@
         </table>
         </form>
     </div>   
-    
-</head>
-<body>
-
 </body>
 </html>

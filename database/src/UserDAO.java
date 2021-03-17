@@ -167,7 +167,8 @@ public class UserDAO {
               String lastName = resultSet.getString("lastName");
               String gender = resultSet.getString("gender");
               String birthday = resultSet.getString("birthday"); 
-              user = new User(email, password, firstName, lastName, gender, birthday);    
+              user = new User(email, password, firstName, lastName, gender, birthday); 
+              System.out.println("userDAO: " + user.toString());
         }
 
         return user; 

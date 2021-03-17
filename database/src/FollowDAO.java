@@ -62,23 +62,7 @@ public class FollowDAO {
     
     public void dropTable() throws SQLException {
     	connect_func();   
-    	statement = connect.createStatement();
-//    	String sql0 = "SHOW TABLES LIKE 'Follows'"; 
-//    	resultSet = statement.executeQuery(sql0);
-//    	String gotTable = ""; 
-//    	if (resultSet.next()) {
-//             gotTable = resultSet.getString("Tables_in_testdb (Follows)");
-//        }
-//    	if( !gotTable.isEmpty()) {
-//    		String sql1 = "ALTER TABLE Follows DROP FOREIGN KEY userID"; 
-//    		String sql2 = "ALTER TABLE Follows DROP FOREIGN KEY followerID";
-//    		String sql3 = "DROP TABLE IF EXISTS Follows";
-//    		statement.executeUpdate(sql1);
-//    		statement.executeUpdate(sql2);
-//    		statement.executeUpdate(sql3);
-//    	}
-    	
-    	
+    	statement = connect.createStatement();   	
     	String sql4 = "DROP TABLE IF EXISTS Follows";
     	statement.executeUpdate(sql4);
     }
@@ -137,16 +121,7 @@ public class FollowDAO {
     }
     
    
-    /*
-	
-	resultSet = SHOW TABLES LIKE 'Users';
-	if ( resultset != null)
-		- table exists
-		 - drop foreign key constraints 
-		 - drop table 
-		 
-	- create table 
-*/
+
      
           
 

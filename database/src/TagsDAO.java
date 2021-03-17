@@ -63,18 +63,6 @@ public class TagsDAO {
     public void dropTable() throws SQLException {
     	connect_func();   
     	statement = connect.createStatement();
-//    	String sql0 = "SHOW TABLES LIKE 'Tags'"; 
-//    	resultSet = statement.executeQuery(sql0);
-//    	String gotTable = ""; 
-//    	if (resultSet.next()) {
-//             gotTable = resultSet.getString("Tables_in_testdb (Tags)");
-//        }
-//    	if( !gotTable.isEmpty()) {
-//    		String sql1 = "ALTER TABLE Tags DROP FOREIGN KEY fk_imgID3"; 
-//    		String sql3 = "DROP TABLE IF EXISTS Tags";
-//    		statement.executeUpdate(sql1);
-//    		statement.executeUpdate(sql3);
-//    	}
     	
     	String sql4 = "DROP TABLE IF EXISTS Tags";
     	statement.executeUpdate(sql4);
@@ -131,7 +119,6 @@ public class TagsDAO {
 	
 	public String getTagsForImage(int imgID) throws SQLException {
 		connect_func();
-    	statement = connect.createStatement();
         String sql = "SELECT tag \r\n" + 
         			"FROM Tags\r\n" + 
         			"WHERE imgID = ?;";
@@ -148,5 +135,57 @@ public class TagsDAO {
 
         return tags;    
 	}
+	
+	 public boolean insert(String tag, int imgID) throws SQLException {
+		
+		 try {		  
+			  	connect_func();   
+				String sql = "INSERT INTO Tags(Tag, imgID) VALUES(?, ?);";  
+				preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+				
+				
+				preparedStatement.setString(1, tag);
+		        preparedStatement.setInt(2, imgID);
+				
+				
+		        boolean rowInserted = preparedStatement.executeUpdate() > 0;
+		        preparedStatement.close();
+		        return rowInserted;
+			  
+		  }
+	        catch (java.sql.SQLIntegrityConstraintViolationException e) {
+	            System.out.println("the image already has that tag.");
+	            return false;
+	       }
+		 
+	 }
+	 
+	 
+	 public boolean insertTagList(String[] tagList, int imgID) throws SQLException {
+		
+		 for(String tag: tagList) {
+	    		if(!tag.isEmpty()) {
+	    			 boolean rowInserted = this.insert(tag, imgID);
+	    			 if(!rowInserted) {
+	    				 return false; 
+	    			 }
+	    		}
+	    	}
+		return true;
+	 }
+	 
+	  public boolean delete(int imgID) throws SQLException {
+	        String sql = "DELETE FROM Tags WHERE imgID = ?"; 
+	        connect_func();
+	         
+	        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+	        preparedStatement.setInt(1, imgID);
+	         
+	        boolean rowDeleted = preparedStatement.executeUpdate() > 0;
+	        preparedStatement.close();
+
+	        return rowDeleted;     
+	   }
+	
 	
     }     

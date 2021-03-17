@@ -7,21 +7,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="ISO-8859-1">
-<title>Edit Post</title>
-
-    <div align="center">
-            <form action="loginUser" method="post">
-        <table border="1" cellpadding="5">
+	<meta charset="ISO-8859-1">
+	<title>Create Post</title>
+	<style>
+	   input  {
+	    width: 600px;
+		}
+	</style>
+</head>
+<body>
+  <div align="center">
+            <form action="postImage"  method="post">
+        <table border="1" cellpadding="40">
             <caption>
                 <h1>
-                        Edit Post
+                        Create Post
                 </h1>
             </caption>     
             <tr>
                 <th>Image URL: </th>
                 <td>
-                    <input type="text" name="username" size="45"
+                    <input type="text" name="url"
                             value="<c:out value='${url}' />"
                         />
                 </td>
@@ -29,7 +35,7 @@
             <tr>
                 <th>Tags: </th>
                 <td>
-                    <input type="text" name="tags" size="45"
+                    <input type="text" name="tags" 
                             value="<c:out value='${tags}' />"
                     />
                 </td>
@@ -37,7 +43,7 @@
              <tr>
                 <th>Description: </th>
                 <td>
-                    <input type="text" name="description" size="45"
+                    <input type="text" name="description"
                             value="<c:out value='${description}' />"
                     />
                 </td>
@@ -45,15 +51,11 @@
             
             <tr>
                 <td colspan="2" align="center">
-                    <input type="submit" value="Save Changes" />
+                    <input type="submit" value="Post" />
                 </td>
             </tr>
         </table>
         </form>
     </div>   
-    
-</head>
-<body>
-
 </body>
 </html>

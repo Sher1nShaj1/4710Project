@@ -6,11 +6,27 @@
     <title>Home</title>
 </head>
 <body>
-	<h1>Home</h1>
-	<p>
-     	Welcome! 
-     	User: ${sessionScope.currentUser.email}
-     </p>
+
+<div style = "background-color: lightblue;" >
+
+ 		<h2 >
+	 		 <a style="margin-right: 20px;" href="/database-master_database/home">Home</a>
+	                
+	         <a href="/database-master_database/userProfile">User Profile</a>
+ 		</h2>
+     	
+     
+     	<div align="center">
+     		<h1>Home</h1>
+	     	<h1>User: ${sessionScope.currentUser.email}</h1>
+		 	<p>Welcome  ${sessionScope.currentUser.firstName} ${sessionScope.currentUser.lastName}!</p>
+		 	<hr style="margin-bottom:30px;" >
+     	</div>
+ 	 	 
+ 	</div>
+
+
+
      
     <div align="center">
      <c:if test="${sessionScope.currentUser.email.equals('root')}">
@@ -25,14 +41,8 @@
         
         </form>
      </c:if>
+    </div>  
+    
      
-     
-     
-  
-     
-     
-     
-        
-    </div>   
 </body>
 </html>

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.sql.PreparedStatement;
 //import java.sql.Connection;
 //import java.sql.PreparedStatement;
@@ -63,22 +64,6 @@ public class LikesDAO {
     public void dropTable() throws SQLException {
     	connect_func();   
     	statement = connect.createStatement();
-//    	String sql0 = "SHOW TABLES LIKE 'Likes'"; 
-//    	resultSet = statement.executeQuery(sql0);
-//    	String gotTable = ""; 
-//    	if (resultSet.next()) {
-//             gotTable = resultSet.getString("Tables_in_testdb (Likes)");
-//        }
-//    	if( !gotTable.isEmpty()) {
-//    		String sql1 = "ALTER TABLE Likes DROP FOREIGN KEY fk_userID2"; 
-//    		String sql2 = "ALTER TABLE Likes DROP FOREIGN KEY fk_imgID2";
-//    		String sql3 = "DROP TABLE IF EXISTS Likes";
-//    		statement.executeUpdate(sql1);
-//    		statement.executeUpdate(sql2);
-//    		statement.executeUpdate(sql3);
-//    	}
-    	
-    	
     	String sql4 = "DROP TABLE IF EXISTS Likes";
     	statement.executeUpdate(sql4);
     }
@@ -136,6 +121,46 @@ public class LikesDAO {
     			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted10 ); 
 	}
 	
+	  public boolean insert(String email, int imgID) throws SQLException {
+		  try {
+				String likeDate = java.time.LocalDate.now().toString();   
+				 
+			  
+			  	connect_func();   
+				String sql = "INSERT INTO Likes(email, imgID, likeDate) VALUES(?, ?, ?)";  
+				preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+				
+				
+				preparedStatement.setString(1, email);
+		        preparedStatement.setInt(2, imgID);
+		        preparedStatement.setString(3, likeDate);
+				
+				
+		        boolean rowInserted = preparedStatement.executeUpdate() > 0;
+		        preparedStatement.close();
+		        return rowInserted;
+			  
+		  }
+	        catch (java.sql.SQLIntegrityConstraintViolationException e) {
+	            System.out.println("the image is already liked by user.");
+	            return false;
+	       }
+
+	  }  
+	  
+	  public boolean delete(int imgID) throws SQLException {
+	        String sql = "DELETE FROM Likes WHERE imgID = ? "; 
+	        connect_func();
+	         
+	        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+	        preparedStatement.setInt(1, imgID);
+	         
+	        boolean rowDeleted = preparedStatement.executeUpdate() > 0;
+	        preparedStatement.close();
+
+	        return rowDeleted;     
+	   }
+	
 	public int getLikesForImage(int imgID) throws SQLException {
 		connect_func();
     	statement = connect.createStatement();
@@ -150,12 +175,14 @@ public class LikesDAO {
 
         int likesCount = -1; 
         if (resultSet.next()) {
-        	  System.out.println("\n\n in likesDAO likesCount: " + likesCount); 
+        	 
               likesCount = resultSet.getInt("likesCount");     
         }
 
         return likesCount;    
 	}
+	
+     
 	
 	
   } 

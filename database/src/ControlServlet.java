@@ -11,8 +11,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionAttributeListener;
+import javax.servlet.http.HttpSessionBindingEvent;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
@@ -23,7 +26,9 @@ import java.sql.PreparedStatement;
  * requests from the user.
  * @author www.codejava.net
  */
-public class ControlServlet extends HttpServlet {
+
+
+public class ControlServlet extends HttpServlet   {
     private static final long serialVersionUID = 1L;
     private UserDAO userDAO; 
     private FollowDAO followDAO; 
@@ -31,7 +36,7 @@ public class ControlServlet extends HttpServlet {
     private CommentsDAO commentsDAO; 
     private LikesDAO likesDAO; 
     private TagsDAO tagsDAO; 
-    private User currentUser; 
+  
     
     public void init(){
  
@@ -42,10 +47,9 @@ public class ControlServlet extends HttpServlet {
 			commentsDAO = new CommentsDAO(); 
 			likesDAO = new LikesDAO(); 
 			tagsDAO = new TagsDAO(); 
-			currentUser = null; 
+			
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -83,8 +87,27 @@ public class ControlServlet extends HttpServlet {
             	break; 
             case "/userProfile":
             	showUserProfile(request, response); 
+            	break;
+            case "/userProfile/createPost":
+            	showCreatePostForm(request, response); 
+            	break;
+            case "/userProfile/postImage":
+            	postImage(request, response); 
+            	break;
+            case "/userProfile/deletePost":
+            	showDeletePostForm(request, response); 
+            	break;
+            case "/deletePost":
+            	deletePost(request, response); 
+            	break;
+            case "/userProfile/editPost":
+            	showEditPostForm(request, response); 
+            	break;
+            case "/editPost":
+            	editPost(request, response); 
             	break; 
-           
+        	
+             
             }
         } catch (SQLException ex) {
             throw new ServletException(ex);
@@ -92,16 +115,112 @@ public class ControlServlet extends HttpServlet {
     }
     
 
+
+	private void postImage(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+		HttpSession session = request.getSession();
+        User currentUser = (User) session.getAttribute("currentUser");
+        
+        System.out.println("user in post Image: " + currentUser); 
+        
+		String url = request.getParameter("url");
+        String tags = request.getParameter("tags");
+    	String description = request.getParameter("description");
+    	
+
+    	Image image = new Image(url, description, currentUser); 
+    	System.out.println("in post Image: " + image.toString()); 
+    	boolean isPosted = imageDAO.insert(currentUser.email, image); 
+    	
+    	
+    	if(isPosted) {
+    		image.imgID = imageDAO.getLastestPostImageID(currentUser.email);
+    		String[] tagList = tags.split("#");
+        	boolean tagsInserted = tagsDAO.insertTagList(tagList, image.imgID);
+    	}
+    	
+    	
+    	response.sendRedirect("../userProfile");  
+	}
+
+	private void showCreatePostForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		RequestDispatcher dispatcher = request.getRequestDispatcher("CreatePost.jsp");       
+        dispatcher.forward(request, response);
+	}
+	
+   private void showDeletePostForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+	    HttpSession session = request.getSession();
+        User currentUser = (User) session.getAttribute("currentUser");
+		String imgIDString = request.getParameter("imgID"); 
+		int imgID = Integer.parseInt(imgIDString);
+		 
+		Image image = imageDAO.getImageByID(imgID, currentUser); 
+		image.tags = tagsDAO.getTagsForImage(imgID); 
+	   
+	    RequestDispatcher dispatcher = request.getRequestDispatcher("DeletePost.jsp"); 
+	    request.setAttribute("image", image);
+        dispatcher.forward(request, response);
+	}
+   
+   private void deletePost(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
+	   String imgIDString = request.getParameter("imgID"); 
+	   int imgID = Integer.parseInt(imgIDString);
+	   
+	   boolean areTagsDeleted = tagsDAO.delete(imgID); 
+	   boolean areCommentsDeleted = commentsDAO.delete(imgID);  
+	   boolean areLikesDeleted = likesDAO.delete(imgID); 
+	   	
+  
+	   boolean isImgDeleted = imageDAO.delete(imgID); 
+	   
+	   response.sendRedirect("userProfile"); 
+	}
+
+	
+   
+	private void showEditPostForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, NumberFormatException, SQLException {
+		HttpSession session = request.getSession();
+        User currentUser = (User) session.getAttribute("currentUser");
+		String imgIDString = request.getParameter("imgID"); 
+		int imgID = Integer.parseInt(imgIDString);
+		 
+		Image image = imageDAO.getImageByID(imgID, currentUser); 
+		image.tags = tagsDAO.getTagsForImage(imgID); 
+		
+		RequestDispatcher dispatcher = request.getRequestDispatcher("EditPost.jsp");  
+		request.setAttribute("image", image);
+        dispatcher.forward(request, response);
+	}
+	
+	private void editPost(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
+		String imgIDString = request.getParameter("imgID");
+		int imgID = Integer.parseInt(imgIDString); 
+		String url = request.getParameter("url");
+        String tags = request.getParameter("tags");
+    	String description = request.getParameter("description");
+    	
+    	Image image = new Image(imgID, url, description); 
+    	imageDAO.update(image); 
+    	
+    	tagsDAO.delete(imgID);
+    	String[] tagList = tags.split("#");
+    	boolean tagsInserted = tagsDAO.insertTagList(tagList, imgID); 
+    	
+    	
+    	response.sendRedirect("userProfile"); 
+	}
+
 	private void showUserProfile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
 		
-		HttpSession session = request.getSession();
-        currentUser = (User) session.getAttribute("currentUser");
-        System.out.println(currentUser); 
+		HttpSession session = request.getSession(); 
+        User currentUser = (User) session.getAttribute("currentUser"); 
+        
+        
 		List<Image> postedImages = imageDAO.getImagesPostedByUser(currentUser);
 		int likeCount = 0;
 		String tags = ""; 
 		
-		for(Image image: postedImages) {
+		for(Image image: postedImages) { 
 			likeCount = likesDAO.getLikesForImage(image.imgID);
 			tags = tagsDAO.getTagsForImage(image.imgID); 
 			image.setLikesCount(likeCount);
@@ -118,6 +237,11 @@ public class ControlServlet extends HttpServlet {
 	private void showHome(HttpServletRequest request, HttpServletResponse response)
 			throws SQLException, IOException, ServletException {
 		
+		HttpSession session = request.getSession();
+         
+        User currentUser = (User) session.getAttribute("currentUser");
+    
+		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("Home.jsp");       
         dispatcher.forward(request, response);
 	}
@@ -125,36 +249,43 @@ public class ControlServlet extends HttpServlet {
 	private void initializeDatabase(HttpServletRequest request, HttpServletResponse response) 
 			throws SQLException, IOException, ServletException {
 		
-		 tagsDAO.dropTable();
-		 commentsDAO.dropTable();  
-		 likesDAO.dropTable();
-		 followDAO.dropTable();
-		 imageDAO.dropTable();
-		 userDAO.dropTable();
-		  
-		 
-		 
-		 int rowsCreatedUsers = userDAO.createTable();
-		 int rowsCreatedImages = imageDAO.createTable();
-		 int rowsCreatedTags = tagsDAO.createTable(); 
-		 int rowsCreatedComments = commentsDAO.createTable();
-		 int rowsCreatedLikes = likesDAO.createTable();
-		 int rowsCreatedFollow = followDAO.createTable();
-	 
-
-		 
-		 
-		 userDAO.fillTable(); 
-		 imageDAO.fillTable();
-		 tagsDAO.fillTable(); 
-		 commentsDAO.fillTable();
-		 likesDAO.fillTable(); 
-		 followDAO.fillTable(); 
+		HttpSession session = request.getSession();  
+        User currentUser = (User) session.getAttribute("currentUser");
 		
-	 
-		 RequestDispatcher dispatcher = request.getRequestDispatcher("/home");
-	     dispatcher.forward(request, response);
-		
+        if(currentUser.email.equals("root")){
+    		
+	   		 tagsDAO.dropTable();
+	   		 commentsDAO.dropTable();  
+	   		 likesDAO.dropTable();
+	   		 followDAO.dropTable();
+	   		 imageDAO.dropTable();
+	   		 userDAO.dropTable();
+	   		  
+	   		 
+	   		 
+	   		 int rowsCreatedUsers = userDAO.createTable();
+	   		 int rowsCreatedImages = imageDAO.createTable();
+	   		 int rowsCreatedTags = tagsDAO.createTable(); 
+	   		 int rowsCreatedComments = commentsDAO.createTable();
+	   		 int rowsCreatedLikes = likesDAO.createTable();
+	   		 int rowsCreatedFollow = followDAO.createTable();
+	   	 
+	   
+	   		 
+	   		 
+	   		 userDAO.fillTable(); 
+	   		 imageDAO.fillTable();
+	   		 tagsDAO.fillTable(); 
+	   		 commentsDAO.fillTable();
+	   		 likesDAO.fillTable(); 
+	   		 followDAO.fillTable(); 
+   		
+        }  
+        
+        
+        
+        response.sendRedirect("home");
+        
 	}
 
 	private void showLoginPage(HttpServletRequest request, HttpServletResponse response)
@@ -169,36 +300,36 @@ public class ControlServlet extends HttpServlet {
     	
         String emailInput = request.getParameter("email");
         String passwordInput = request.getParameter("password");
-         
-        System.out.println("eamil: " + emailInput + " password: " + passwordInput); 
         
-        currentUser = userDAO.getUserByEmail(emailInput); 
+        User currentUser = userDAO.getUserByEmail(emailInput); 
         
          
         if( currentUser == null || !passwordInput.equals(currentUser.password) ) { // user not found
-        	System.out.print("null");
         	RequestDispatcher dispatcher = request.getRequestDispatcher("Login.jsp");
             request.setAttribute("loginError", "Invalid username or password. Try again.");
             dispatcher.forward(request, response);
+            
         }
         else {
         	HttpSession session = request.getSession();
-            session.setAttribute("currentUser", currentUser);
-        	System.out.println(currentUser.getEmail() + " " + passwordInput); 
-        	System.out.println( currentUser.toString() );
-        	RequestDispatcher dispatcher = request.getRequestDispatcher("Home.jsp");
-        	dispatcher.forward(request, response); 
+            session.setAttribute("currentUser", currentUser);  
+            System.out.println("Session ID: " + session.getId());
+            System.out.println("Creation Time: " + new Date(session.getCreationTime()));
+            System.out.println("Last Accessed Time: " + new Date(session.getLastAccessedTime()));
+            response.sendRedirect("home");  
         }  
     }
 
     private void showSignupPage(HttpServletRequest request, HttpServletResponse response) 
     		 throws SQLException, IOException, ServletException{
+    	
     	RequestDispatcher dispatcher = request.getRequestDispatcher("Signup.jsp");       
         dispatcher.forward(request, response);
 	}
     
     private void createUser(HttpServletRequest request, HttpServletResponse response) 
     		throws SQLException, IOException, ServletException{
+
     	String email = request.getParameter("email");
         String password = request.getParameter("password");
     	String confirmPassword = request.getParameter("confirmPassword");
@@ -217,7 +348,7 @@ public class ControlServlet extends HttpServlet {
             request.setAttribute("lastName", lastName);
             request.setAttribute("gender", gender);
             request.setAttribute("birthday", birthday);
-            dispatcher.forward(request, response); 
+            dispatcher.forward(request, response);
             
         }
         else if ( userDAO.getUserByEmail(email) != null ){ 
@@ -231,18 +362,23 @@ public class ControlServlet extends HttpServlet {
             request.setAttribute("gender", gender);
             request.setAttribute("birthday", birthday);
             dispatcher.forward(request, response);
+            
         }
         else {
         	
-        	currentUser = new User(email, password, firstName, lastName, gender, birthday);
+        	User currentUser = new User(email, password, firstName, lastName, gender, birthday);
         	HttpSession session = request.getSession();
             session.setAttribute("currentUser", currentUser);
         	userDAO.insert(currentUser); 
     	    System.out.println(currentUser.toString()); 
-            response.sendRedirect("home"); 
+            response.sendRedirect("home");      
         }
+        
+    	}
+
+
         
      
 	}
-
-}
+    
+ 

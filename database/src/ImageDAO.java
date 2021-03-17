@@ -72,7 +72,7 @@ public class ImageDAO {
         statement = connect.createStatement();
         String sql5 = "CREATE TABLE IF NOT EXISTS Images (\r\n" + 
         		"			imageID MEDIUMINT AUTO_INCREMENT NOT NULL,\r\n" + 
-        		"        	url VARCHAR(150) NOT NULL,\r\n" + 
+        		"        	url VARCHAR(2083) NOT NULL,\r\n" + 
         		"        	description VARCHAR(100) NOT NULL,\r\n" + 
         		"            postUser VARCHAR(100) NOT NULL, \r\n" + 
         		"            postDate DATE,\r\n" + 
@@ -125,8 +125,7 @@ public class ImageDAO {
         							"FROM Images, Users\r\n" + 
         							"WHERE Users.email = ? && postUser = Users.email");
         
-        
-        System.out.println(sql); 
+         
         connect_func();      
         
         preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
@@ -135,7 +134,7 @@ public class ImageDAO {
         ResultSet resultSet = preparedStatement.executeQuery();
          
         while (resultSet.next()) {
-//        	public Image(int imgID, String url, String description, User postUser, String postDate, String postTime) 
+
         	
             int imageID = resultSet.getInt("imageID");
             String url = resultSet.getString("url");
@@ -149,58 +148,127 @@ public class ImageDAO {
         return imageList;
 		
 	}
+	
+	public boolean insert(String email, Image image) throws SQLException {
+		
+    	connect_func(); 
+    	image.postDate = java.time.LocalDate.now().toString();
+    	image.postTime = java.time.LocalDateTime.now().toString();
+    	
+    	
+    	String sql = "INSERT INTO Images(url, description, postUser, postDate, postTime) VALUES(?, ?, ?, ?, ?)"; 
+		
+		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+		preparedStatement.setString(1, image.url);
+		preparedStatement.setString(2, image.description);
+		preparedStatement.setString(3, email);
+		preparedStatement.setString(4, image.postDate);
+		preparedStatement.setString(5, image.postTime);
+		
+        boolean rowInserted = preparedStatement.executeUpdate() > 0;
+        
+        
+        preparedStatement.close();
+        return rowInserted;		
+	}
+	
+	 public boolean update(Image image) throws SQLException {
+	        String sql = "UPDATE Images\r\n" + 
+		        		"SET url = ? ,\r\n" + 
+		        		"	description = ? \r\n" + 
+		        		"WHERE imageID = ? ";
+	        connect_func();
+	        
+	        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+	        preparedStatement.setString(1, image.url);
+	        preparedStatement.setString(2, image.description);
+	        preparedStatement.setInt(3, image.imgID);
+	        
+	         
+	        boolean rowUpdated = preparedStatement.executeUpdate() > 0;
+	        preparedStatement.close();
+
+	        return rowUpdated;     
+	 }
+	 
+    public boolean delete(int imgID) throws SQLException {
+        String sql = "DELETE FROM Images WHERE imageID =  ? "; 
+        connect_func();
+         
+        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+        preparedStatement.setInt(1, imgID);
+         
+        boolean rowDeleted = preparedStatement.executeUpdate() > 0;
+        preparedStatement.close();
+
+        return rowDeleted;     
+    }
+	
+	
+	public int getLastestPostImageID(String email) throws SQLException{
+		
+		connect_func(); 
+    	
+    	String sql = "SELECT imageID " + 
+		    			"FROM images " + 
+		    			"WHERE postUser = ? " + 
+		    			"ORDER BY posttime DESC " + 
+		    			"LIMIT 1"; 
+		
+		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+		preparedStatement.setString(1, email);
+
+		ResultSet resultSet = preparedStatement.executeQuery();
+		
+		int imageID = -1; 
+        while (resultSet.next()) {
+            imageID = resultSet.getInt("imageID");
+        }      
+        disconnect();
+        preparedStatement.close();
+        return imageID;	
+	}
+	
+	
+	
+	public Image getImageByID(int imgID, User user) throws SQLException{
+		
+		connect_func(); 
+    	
+    	String sql = "SELECT * FROM Images WHERE imageID = ? AND postUser = ?"; 
+		
+		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+		preparedStatement.setInt(1, imgID);
+		preparedStatement.setString(2, user.email);
+
+		ResultSet resultSet = preparedStatement.executeQuery();
+		
+		Image image = null; 
+        while (resultSet.next()) {
+             String url = resultSet.getString("url");
+             String description = resultSet.getString("description");
+             String postTime = resultSet.getString("postTime");
+              
+             image = new Image(imgID, url, description, user, postTime); 
+        }      
+        disconnect();
+        preparedStatement.close();
+        return image;	
+	}
+	
+	
 		
 } 
 
 
 
 
-/*
+
  
  
- connect_func();
-    	statement = connect.createStatement();
-        String sql = "SELECT  COUNT(Likes.email) as likesCount\r\n" + 
-        			"FROM Likes\r\n" + 
-        			"WHERE imgID = ?";
-        
-        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
-        preparedStatement.setInt(1, imgID);
-        
-        ResultSet resultSet = preparedStatement.executeQuery();
-
-        int likesCount = -1; 
-        if (resultSet.next()) {
-        	  System.out.println("\n\n in likesDAO likesCount: " + likesCount); 
-              likesCount = resultSet.getInt("likesCount");     
-        }
-
-        return likesCount; 
-        
         
         
 
-get all iamges for a particular user db methods
-	- image data 
-	
-			SELECT url, description, postTime
-			FROM Images, Users
-			WHERE Users.email = 'jhalpert@email.com' && postUser = Users.email; 
 
-	- likes count for imgID
-	
-			SELECT  COUNT(Likes.email)
-			FROM Likes
-			WHERE imgID = 5;
-	
-	- tags
-	
-			SELECT tag 
-			FROM Tags
-			WHERE imgID = 5;
-			
-			
-image object class 
-*/
 
 

@@ -25,21 +25,29 @@ public class User {
     
  
     public User() {
+		this.email = "";
+		this.password = "";
+		this.firstName = "";
+		this.lastName = "";
+		this.gender = "";
+		this.birthday = "";
+		this.numOfFollowers = 0;
+		this.numOfFollowings = 0;
     }
  
     
 
 	public User(String email, String password, String firstName, String lastName, String gender, String birthday,
 		int numOfFollowers, int numOfFollowings) {
-	super();
-	this.email = email;
-	this.password = password;
-	this.firstName = firstName;
-	this.lastName = lastName;
-	this.gender = gender;
-	this.birthday = birthday;
-	this.numOfFollowers = numOfFollowers;
-	this.numOfFollowings = numOfFollowings;
+		super();
+		this.email = email;
+		this.password = password;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.gender = gender;
+		this.birthday = birthday;
+		this.numOfFollowers = numOfFollowers;
+		this.numOfFollowings = numOfFollowings;
 	}
 	
 
@@ -58,11 +66,11 @@ public class User {
 
 
 
-	public String getEmail() {
+	public String getemail() {
 		return email;
 	}
 
-	public void setEmail(String email) {
+	public void setemail(String email) {
 		this.email = email;
 	}
 
@@ -100,15 +108,15 @@ public class User {
 		this.password = password;
 	}
 
-	public String getFirstname() {
+	public String getfirstName() {
 		return firstName;
 	}
 
-	public void setFirstname(String firstname) {
+	public void setfirstName(String firstname) {
 		this.firstName = firstname;
 	}
 
-	public String getLastname() {
+	public String getlastName() {
 		return lastName;
 	}
 

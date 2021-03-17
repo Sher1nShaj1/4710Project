@@ -9,12 +9,33 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>User Profile</title>
+</head>
+<body>
+ 	<div style = "background-color: lightblue;" >
 
- 	<h1>User Profile</h1>
- 	<p>User: ${sessionScope.currentUser.email}</p>
- 	
- 	<button type="button" onclick="alert('Hello world!')">Create New Post</button>
-                  
+ 		<h2>
+	 		 <a style="margin-right: 20px;" href="/database-master_database/home">Home</a>
+	                
+	         <a href="/database-master_database/userProfile">User Profile</a>
+ 		</h2>
+     	
+     
+     	<div align="center">
+     	<h1>User: ${sessionScope.currentUser.email}</h1>
+	 	<p>Welcome  ${sessionScope.currentUser.firstName} ${sessionScope.currentUser.lastName}</p>
+	 	
+	 	
+	 	
+	     <form  style="margin-bottom:20px;"  action="/database-master_database/userProfile/createPost">
+	    	<input type="submit" value="Create New Post" />
+		 </form> 
+		 <hr style="margin-bottom:30px;" >
+     	 </div>
+ 	 	 
+ 	</div>
+ 	      
+ 	      
+ 	       
                                  
     <div align="center">
    	  <c:forEach var="image" items="${postedImages}">
@@ -22,8 +43,19 @@
         	<tr>
                 <td >
                    User: ${image.postUser.email}
-                   <button style="float: right;" type="button" onclick="alert('Hello world!')">Edit</button>
-                   <button style="float: right;" type="button" onclick="alert('Hello world!')">Delete</button>   
+                   
+                    <form style="float: right;" action="/database-master_database/userProfile/editPost">
+                    
+	                    <input type="hidden" name="imgID" value="${image.imgID}"/>
+				    	<input type="submit" value="Edit" />
+				    	
+					</form> 
+					<form style="float: right;" action="/database-master_database/userProfile/deletePost">
+					
+					   <input type="hidden" name="imgID" value="${image.imgID}"/>
+				    	<input type="submit" value="Delete" />
+				    	
+					</form>   
             </tr> 
             <tr>
                 <td colspan="3">
@@ -57,13 +89,9 @@
         	</table>
         	
          
-       </c:forEach>
-       
-        
+       </c:forEach> 
     </div>   
     
-</head>
-<body>
-
+    
 </body>
 </html>

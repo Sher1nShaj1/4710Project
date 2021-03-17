@@ -66,14 +66,9 @@
 
             <tr>
                 <th>Gender: </th>
-                <td>
-                	<label  for="male">Male</label>
-		             <input type="radio" name="gender" size="1"
-                            value="M" id="male"
-                    />
-                    <label  for="female">Female</label>
-                    <input type="radio" name="gender" size="1"
-                            value="F" id="female" 
+                 <td>
+                    <input type="text" name="gender" 
+                            value="<c:out value='${gender}' />"
                     />
                 </td>
             </tr>
