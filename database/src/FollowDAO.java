@@ -120,6 +120,41 @@ public class FollowDAO {
     			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted10 ); 
     }
     
+    /**
+	 * Allows a given user to follow another user
+	 * @param follow, a Follow object
+	 */
+	public void insert(Follow follow) throws SQLException {
+		String sql = "INSERT into follows(followingEmail, followerEmail) values (?, ?)";
+		connect_func();
+
+		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+		preparedStatement.setString(1, follow.followingEmail());
+		preparedStatement.setString(2, follow.followerEmail());
+
+		preparedStatement.executeUpdate();
+		preparedStatement.close();
+
+		disconnect();
+	}
+
+	/**
+	 * Allows a given user to unfollow another user
+	 * @param follow, a Follow object
+	 */
+	public void delete(Follow follow) throws SQLException {
+		String sql = "DELETE from follows where followingEmail = ? and followerEmail = ?";
+		connect_func();
+
+		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+		preparedStatement.setString(1, follow.followingEmail());
+		preparedStatement.setString(2, follow.followerEmail());
+
+		preparedStatement.executeUpdate();
+		preparedStatement.close();
+
+		disconnect();
+	}
    
 
      
