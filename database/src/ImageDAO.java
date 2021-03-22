@@ -257,6 +257,34 @@ public class ImageDAO {
 	}
 	
 	
+	
+	public List<Image> getFeed(String user) throws SQLException{
+		List<Image> images = new ArrayList<Image>();
+		connect_func("root","root1234");
+		String sql = "select * from image "
+				+ "left join follows "
+				+"on email = followeeEmail "
+				+"where followerEmail = ? or email = ? "
+				+"group by email,url "
+				+"order by ts desc;";
+
+		preparedStatement = connect.prepareStatement(sql);
+		preparedStatement.setString(1, user);
+		preparedStatement.setString(2, user);
+		ResultSet resultSet = preparedStatement.executeQuery();
+
+		while(resultSet.next()) {
+			int id = resultSet.getInt("imageId");
+			postedImages t = resultSet.getTimestamp("ts");
+			String em = resultSet.getString("email");
+			String url = resultSet.getString("url");
+			String desc = resultSet.getString("description");
+
+			images.add(new Image(id, t, em, url, desc));
+		}
+		disconnect();
+		return images;
+	}
 		
 } 
 
