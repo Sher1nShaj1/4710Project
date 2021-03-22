@@ -420,7 +420,7 @@ public class ControlServlet extends HttpServlet   {
 		List<Image> images = imageDAO.getFeed(currentUser);
 		for (int i = 0; i < images.size(); i = i+1) {
 			Image temp = images.get(i);
-			temp.setLikeCount(likeDAO.likeCount(temp.getImageId()));
+			temp.setLikeCount(likesDAO.likeCount(temp.getImageId()));
 			images.set(i, temp);
 		}
 		request.setAttribute("username", currentUser);
