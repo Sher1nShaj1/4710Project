@@ -182,7 +182,23 @@ public class LikesDAO {
         return likesCount;    
 	}
 	
-     
+     public int likeCount(int imageid) throws SQLException {
+		int count = 0;
+		String sql = "SELECT COUNT(likeSwitch) as total FROM Likes WHERE likeSwitch = true AND imageId = ?";
+		connect_func();
+
+		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+		preparedStatement.setInt(1, imageid);
+		ResultSet resultSet = preparedStatement.executeQuery();
+		while (resultSet.next()) {
+			count = resultSet.getInt("total");
+		}
+
+		preparedStatement.close();
+
+		disconnect();
+		return count;
+	}
 	
 	
   } 
