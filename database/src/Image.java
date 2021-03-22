@@ -79,6 +79,16 @@ public class Image {
 	}
 
 
+	public Image(int id, String url2, String desc, String em, String t) {
+		super();
+		this.imgID = id;
+		this.url = url2;
+		this.description = desc;
+		this.postUser = new User(em);
+		this.postTime = t;
+	}
+
+
 	public int getImgID() {
 		return imgID;
 	}

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.sql.PreparedStatement;
 //import java.sql.Connection;
 //import java.sql.PreparedStatement;
@@ -258,33 +259,44 @@ public class ImageDAO {
 	
 	
 	
-	public List<Image> getFeed(String user) throws SQLException{
+	public List<Image> getFeed(String email) throws SQLException{
 		List<Image> images = new ArrayList<Image>();
-		connect_func("root","root1234");
-		String sql = "select * from image "
-				+ "left join follows "
-				+"on email = followeeEmail "
-				+"where followerEmail = ? or email = ? "
-				+"group by email,url "
-				+"order by ts desc;";
+		
+		connect_func();
+		
+		String sql = "SELECT *\r\n" + 
+					"FROM Images I\r\n" + 
+					"WHERE I.postUser = ? or postUser in (\r\n" + 
+					"	SELECT followerEmail \r\n" + 
+					"	FROM Follows\r\n" + 
+					"	WHERE followingEmail = ?\r\n" + 
+					")\r\n" + 
+					"ORDER BY I.postTime DESC"; 
 
 		preparedStatement = connect.prepareStatement(sql);
-		preparedStatement.setString(1, user);
-		preparedStatement.setString(2, user);
+		preparedStatement.setString(1, email);
+		preparedStatement.setString(2, email);
+		
 		ResultSet resultSet = preparedStatement.executeQuery();
+        
+        while (resultSet.next()) {
 
-		while(resultSet.next()) {
-			int id = resultSet.getInt("imageId");
-			postedImages t = resultSet.getTimestamp("ts");
-			String em = resultSet.getString("email");
-			String url = resultSet.getString("url");
-			String desc = resultSet.getString("description");
-
-			images.add(new Image(id, t, em, url, desc));
-		}
+            int imageID = resultSet.getInt("imageID");
+            String url = resultSet.getString("url");
+            String description = resultSet.getString("description");
+            String postUser = resultSet.getString("postUser"); 
+            String postTime = resultSet.getString("postTime");
+             
+            Image image = new Image(imageID, url, description, postUser, postTime); 
+            images.add(image);
+        }      
+        
 		disconnect();
 		return images;
 	}
+	
+	
+	
 		
 } 
 

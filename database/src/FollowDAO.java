@@ -129,8 +129,8 @@ public class FollowDAO {
 		connect_func();
 
 		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
-		preparedStatement.setString(1, follow.followingEmail());
-		preparedStatement.setString(2, follow.followerEmail());
+		preparedStatement.setString(1, follow.followingEmail);
+		preparedStatement.setString(2, follow.followerEmail);
 
 		preparedStatement.executeUpdate();
 		preparedStatement.close();
@@ -147,13 +147,38 @@ public class FollowDAO {
 		connect_func();
 
 		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
-		preparedStatement.setString(1, follow.followingEmail());
-		preparedStatement.setString(2, follow.followerEmail());
+		preparedStatement.setString(1, follow.followingEmail);
+		preparedStatement.setString(2, follow.followerEmail);
 
 		preparedStatement.executeUpdate();
 		preparedStatement.close();
 
 		disconnect();
+	}
+	
+	
+	public List<String> getFollowersEmails(String email) throws SQLException{
+		
+		connect_func(); 
+    	
+    	String sql = "SELECT * \r\n" + 
+	    			"FROM Follows\r\n" + 
+	    			"WHERE followingEmail = ?"; 
+		
+		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+		preparedStatement.setString(1, email);
+
+		ResultSet resultSet = preparedStatement.executeQuery();
+		
+		List<String> followerList = new ArrayList<>(); 
+        while (resultSet.next()) {
+             String followerEmail = resultSet.getString("followerEmail");
+         
+             followerList.add(followerEmail);  
+        }      
+        disconnect();
+        preparedStatement.close();
+        return followerList;	
 	}
    
 

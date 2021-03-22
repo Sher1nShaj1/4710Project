@@ -12,7 +12,11 @@
  		<h2 >
 	 		 <a style="margin-right: 20px;" href="/database-master_database/home">Home</a>
 	                
-	         <a href="/database-master_database/userProfile">User Profile</a>
+	         <a style="margin-right: 20px;" href="/database-master_database/userProfile">User Profile</a>
+	         
+	          <a  style="margin-right: 20px;" href="/database-master_database/community">Community</a>
+	          
+	           <a style="margin-right: 20px;"  href="/database-master_database/feed">Feed </a>
  		</h2>
      	
      

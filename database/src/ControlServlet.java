@@ -36,7 +36,7 @@ public class ControlServlet extends HttpServlet   {
     private CommentsDAO commentsDAO; 
     private LikesDAO likeDAO;
     private TagsDAO tagsDAO;
-	private ImageTagDAO imageTagDAO;
+	private LikesDAO likesDAO; 
 	private String currentUser;
   
     
@@ -49,8 +49,7 @@ public class ControlServlet extends HttpServlet   {
 			followDAO = new FollowDAO();
 			commentsDAO = new CommentsDAO(); 
 			likesDAO = new LikesDAO(); 
-			tagsDAO = new TagDAO();
-			imageTagDAO = new ImageTagDAO();
+			tagsDAO = new TagsDAO();
 			currentUser = "";
 			
 			
@@ -86,16 +85,7 @@ public class ControlServlet extends HttpServlet   {
             	break;
             case "/initializeDatabase":
             	initializeDatabase(request, response); 
-            	break;
-            case "/community":
-            	listUsers(request,response);
-            	break;
-            case "/feed":
-            	feedPage(request,response);
-            	break;
-			case "/follow":
-				follow(request,response);
-				break;
+            	break;       
 			case "/home":
             	showHome(request, response); 
             	break; 
@@ -120,8 +110,15 @@ public class ControlServlet extends HttpServlet   {
             case "/editPost":
             	editPost(request, response); 
             	break; 
-        	
-             
+            case "/community":
+            	listUsers(request,response);
+            	break;
+            case "/feed":
+            	feedPage(request,response);
+            	break;
+			case "/follow":
+				follow(request,response);
+				break;
             }
         } catch (SQLException ex) {
             throw new ServletException(ex);
@@ -130,57 +127,48 @@ public class ControlServlet extends HttpServlet   {
     
   private void likeImage(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException{
     	//String url = request.getParameter("url");
+	  HttpSession session = request.getSession();
+      User currentUser = (User) session.getAttribute("currentUser");
+      
     	int id = Integer.parseInt(request.getParameter("id"));
-    	likesDAO.insert(new Like(currentUser,id));
+    	likesDAO.insert(currentUser.email, id);
     	feedPage(request,response);
     }
     
     private void dislikeImage(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException{
     	//String url = request.getParameter("url");
+    	HttpSession session = request.getSession();
+        User currentUser = (User) session.getAttribute("currentUser");
+        
     	int id = Integer.parseInt(request.getParameter("id"));
-    	likesDAO.delete(new Like(currentUser,id));
+    	likesDAO.delete( id);
     	feedPage(request,response);
     }	
 	
    private void postImage(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
-		HttpSession session = request.getSession();
-        User currentUser = (User) session.getAttribute("currentUser");
-        
-        System.out.println("user in post Image: " + currentUser); 
-        
+	   HttpSession session = request.getSession();
+       User currentUser = (User) session.getAttribute("currentUser");
+       
+       System.out.println("user in post Image: " + currentUser); 
+       
 		String url = request.getParameter("url");
-        String tags = request.getParameter("tags");
-    	String desc = request.getParameter("description");
-    	
-
-    	Image image = new Image(url, currentUser, desc);
-		int imageId = -1;
-		int tagId = -1;
-		imageDAO.insert(image);
-		imageId = imageDAO.retrieveImageId(currentUser, url);
-
-    	System.out.println("in post Image: " + image.toString()); 
-    	boolean isPosted = imageDAO.insert(currentUser.email, image);
-
-		String tagsInput = request.getParameter("tags");
-		if(!tagsInput.isEmpty()) {
-			String[] tags = tagsInput.split(",");
-			for(String s: tags) {
-				tagId = tagsDAO.checkExists(new Tag(s));
-				System.out.println(imageId + " " + tagId + " " + s);
-				imageTagDAO.insert(new ImageTag(imageId, tagId));
-			}
-		}
-		feedPage(request, response);
-		
-    	if(isPosted) {
-    		image.imgID = imageDAO.getLastestPostImageID(currentUser.email);
-    		String[] tagList = tags.split("#");
-        	boolean tagsInserted = tagsDAO.insertTagList(tagList, image.imgID);
-    	}
-    	
-    	
-    	response.sendRedirect("../userProfile");  
+       String tags = request.getParameter("tags");
+	   	String description = request.getParameter("description");
+	   	
+	
+	   	Image image = new Image(url, description, currentUser); 
+	   	System.out.println("in post Image: " + image.toString()); 
+	   	boolean isPosted = imageDAO.insert(currentUser.email, image); 
+	   	
+	   	
+	   	if(isPosted) {
+	   		image.imgID = imageDAO.getLastestPostImageID(currentUser.email);
+	   		String[] tagList = tags.split("#");
+	       	boolean tagsInserted = tagsDAO.insertTagList(tagList, image.imgID);
+	   	}
+   	
+   	
+	   	response.sendRedirect("../userProfile");   
 	}
 
 	private void showCreatePostForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -273,6 +261,66 @@ public class ControlServlet extends HttpServlet   {
         dispatcher.forward(request, response);
 		
 	}
+	
+	   private void feedPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
+	    	HttpSession session = request.getSession();
+
+//	        User currentUser = (User) session.getAttribute("currentUser");
+			User currentUser = userDAO.getUserByEmail("kkapoor@email.com"); 
+			session.setAttribute("currentUser", currentUser);
+			
+	        System.out.println("feedpage: " + currentUser);
+	        
+	        
+	    	List<Image> feedImages = imageDAO.getFeed(currentUser.email);
+	    	int likeCount = 0;
+			String tags = ""; 
+			
+			for(Image image: feedImages) { 
+				likeCount = likesDAO.getLikesForImage(image.imgID);
+				tags = tagsDAO.getTagsForImage(image.imgID); 
+				image.setLikesCount(likeCount);
+				image.setTags(tags);
+			}
+			
+			request.setAttribute("feedImages", feedImages);
+			
+			RequestDispatcher dispatcher = request.getRequestDispatcher("FeedPage.jsp");       
+	        dispatcher.forward(request, response);
+		}
+
+	    private void listUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
+	    	HttpSession session = request.getSession();
+	        User currentUser = (User) session.getAttribute("currentUser");
+	          	
+			List<String> follows = followDAO.getFollowersEmails(currentUser.email);
+			
+			request.setAttribute("followList", follows);
+			request.getRequestDispatcher("CommunityPage.jsp").forward(request, response);
+		}
+
+
+	    private void follow(HttpServletRequest request, HttpServletResponse response) throws SQLException,ServletException, IOException{
+	    	HttpSession session = request.getSession();
+	        User currentUser = (User) session.getAttribute("currentUser");
+	        
+	    	boolean status = Boolean.parseBoolean(request.getParameter("status"));
+
+			Follow followObj = new Follow(currentUser.email,request.getParameter("email"));
+			try {
+				if(status) {
+					followDAO.delete(followObj);
+				}
+				else {
+					followDAO.insert(followObj);
+				}
+				listUsers(request,response);
+			}
+			catch(SQLException e) {
+				System.out.println(e.getMessage());
+				listUsers(request,response);
+			}
+		}
 
 
 	private void showHome(HttpServletRequest request, HttpServletResponse response)
@@ -280,8 +328,10 @@ public class ControlServlet extends HttpServlet   {
 		
 		HttpSession session = request.getSession();
          
-        User currentUser = (User) session.getAttribute("currentUser");
-    
+//        User currentUser = (User) session.getAttribute("currentUser");
+		User currentUser = userDAO.getUserByEmail("jhalpert@email.com"); 
+		session.setAttribute("currentUser", currentUser);
+		System.out.println("\nhome user:" + session.getAttribute("currentUser").toString()); 
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("Home.jsp");       
         dispatcher.forward(request, response);
@@ -416,45 +466,7 @@ public class ControlServlet extends HttpServlet   {
         }
         
     	}
-    private void feedPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
-		List<Image> images = imageDAO.getFeed(currentUser);
-		for (int i = 0; i < images.size(); i = i+1) {
-			Image temp = images.get(i);
-			temp.setLikeCount(likesDAO.likeCount(temp.getImageId()));
-			images.set(i, temp);
-		}
-		request.setAttribute("username", currentUser);
-		request.setAttribute("listImages", images);
-		request.getRequestDispatcher("feedPage.jsp").forward(request,response);
-	}
-
-    private void listUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
-		List<Account> users = userDAO.listAllPeople();
-		List<Boolean> follows = followDAO.followList(currentUser);
-		request.setAttribute("userList", users);
-		request.setAttribute("followList", follows);
-		request.getRequestDispatcher("CommunityPage.jsp").forward(request, response);
-	}
-
-
-    private void follow(HttpServletRequest request, HttpServletResponse response) throws SQLException,ServletException, IOException{
-		boolean status = Boolean.parseBoolean(request.getParameter("status"));
-
-		Follow followObj = new Follow(currentUser,request.getParameter("email"));
-		try {
-			if(status) {
-				followDAO.delete(followObj);
-			}
-			else {
-				followDAO.insert(followObj);
-			}
-			listUsers(request,response);
-		}
-		catch(SQLException e) {
-			System.out.println(e.getMessage());
-			listUsers(request,response);
-		}
-	}
+ 
 
 
 }

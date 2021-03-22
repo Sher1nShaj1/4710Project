@@ -66,6 +66,13 @@ public class User {
 
 
 
+	public User(String em) {
+		super();
+		this.email = em; 
+	}
+
+
+
 	public String getemail() {
 		return email;
 	}
