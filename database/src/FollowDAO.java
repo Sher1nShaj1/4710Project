@@ -120,17 +120,14 @@ public class FollowDAO {
     			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted10 ); 
     }
     
-    /**
-	 * Allows a given user to follow another user
-	 * @param follow, a Follow object
-	 */
-	public void insert(Follow follow) throws SQLException {
+
+	public void insert(String currentUserEmail, String otherUserEmail) throws SQLException {
 		String sql = "INSERT into follows(followingEmail, followerEmail) values (?, ?)";
 		connect_func();
 
 		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
-		preparedStatement.setString(1, follow.followingEmail);
-		preparedStatement.setString(2, follow.followerEmail);
+		preparedStatement.setString(1, currentUserEmail);
+		preparedStatement.setString(2, otherUserEmail);
 
 		preparedStatement.executeUpdate();
 		preparedStatement.close();
@@ -138,17 +135,14 @@ public class FollowDAO {
 		disconnect();
 	}
 
-	/**
-	 * Allows a given user to unfollow another user
-	 * @param follow, a Follow object
-	 */
-	public void delete(Follow follow) throws SQLException {
+
+	public void delete(String currentUserEmail, String otherUserEmail) throws SQLException {
 		String sql = "DELETE from follows where followingEmail = ? and followerEmail = ?";
 		connect_func();
 
 		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
-		preparedStatement.setString(1, follow.followingEmail);
-		preparedStatement.setString(2, follow.followerEmail);
+		preparedStatement.setString(1, currentUserEmail);
+		preparedStatement.setString(2, otherUserEmail);
 
 		preparedStatement.executeUpdate();
 		preparedStatement.close();
@@ -180,6 +174,44 @@ public class FollowDAO {
         preparedStatement.close();
         return followerList;	
 	}
+	
+	 public boolean isUserFollowedByCurrentUser(String currentUserEmail, String otherUserEmail) throws SQLException {
+	    	
+	 		connect_func();
+	 		
+	 		String sql = "SELECT  COUNT(followerEmail) as isFollowed\r\n" + 
+	 				"FROM Follows\r\n" + 
+	 				"WHERE followingEmail = ? and followerEmail = ?";
+
+	 		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+	 		preparedStatement.setString(1, currentUserEmail);
+	 		preparedStatement.setString(2, otherUserEmail);
+	 		
+	 		ResultSet resultSet = preparedStatement.executeQuery();
+	 		
+	 		int isFollowedInt = -1; 
+	 		while (resultSet.next()) {
+	 			isFollowedInt = resultSet.getInt("isFollowed");
+	 		}
+	 		
+	 		boolean isFollowed; 
+	 		if(isFollowedInt == 0) {
+	 			isFollowed = false; 
+	 		}
+	 		else {
+	 			isFollowed = true; 
+	 		}
+	 		
+
+	 		preparedStatement.close();
+
+	 		disconnect();
+	 		return isFollowed;
+	 	}
+	
+	
+	
+	
    
 
      

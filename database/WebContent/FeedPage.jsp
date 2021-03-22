@@ -59,16 +59,32 @@ body {background-color: #ffd394;}
 <div class="w3-card w3-round w3-white">
 <div class="w3-container w3-padding">
     
-    <h2 >
-	 		 <a style="margin-right: 20px;" href="/database-master_database/home">Home</a>
-	                
+    <h2 >      
+    		
+    		 <a style="margin-right: 20px;"  href="/database-master_database/feed">Feed </a>
+    		 
 	         <a style="margin-right: 20px;" href="/database-master_database/userProfile">User Profile</a>
 	         
 	          <a  style="margin-right: 20px;" href="/database-master_database/community">Community</a>
 	          
-	           <a style="margin-right: 20px;"  href="/database-master_database/feed">Feed </a>
+	          
  	</h2>
  	<legend  align="center"><h2>Feed Page</h2></legend> 
+ 	
+ 	 <div align="center">
+     <c:if test="${sessionScope.currentUser.email.equals('root')}">
+    	<form action="initializeDatabase" method="post">
+        <table border="1" cellpadding="5">
+            <tr>
+                <td colspan="2" align="center">
+                    <input type="submit" value="Initialize Database" />
+                </td>
+            </tr>
+        </table>
+        
+        </form>
+     </c:if>
+    </div>  
     
 </div>
 </div>

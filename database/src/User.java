@@ -73,6 +73,15 @@ public class User {
 
 
 
+	public User(String email2, String firstName2, String lastName2) {
+		super();
+		this.email = email2;
+		this.firstName = firstName2;
+		this.lastName = lastName2;
+	}
+
+
+
 	public String getemail() {
 		return email;
 	}

@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
  
 import javax.servlet.RequestDispatcher;
@@ -85,9 +86,6 @@ public class ControlServlet extends HttpServlet   {
             	break;
             case "/initializeDatabase":
             	initializeDatabase(request, response); 
-            	break;       
-			case "/home":
-            	showHome(request, response); 
             	break; 
             case "/userProfile":
             	showUserProfile(request, response); 
@@ -125,6 +123,9 @@ public class ControlServlet extends HttpServlet   {
 			case "/follow":
 				follow(request,response);
 				break;
+			case "/unfollow":
+				unfollow(request,response);
+				break;
             }
         } catch (SQLException ex) {
             throw new ServletException(ex);
@@ -132,7 +133,6 @@ public class ControlServlet extends HttpServlet   {
     }
     
    private void likePost(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException{
-    	//String url = request.getParameter("url");
 		  HttpSession session = request.getSession();
 	      User currentUser = (User) session.getAttribute("currentUser");
       
@@ -142,7 +142,6 @@ public class ControlServlet extends HttpServlet   {
     }
     
     private void dislikePost(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException{
-    	//String url = request.getParameter("url");
     	HttpSession session = request.getSession();
         User currentUser = (User) session.getAttribute("currentUser");
         
@@ -272,7 +271,7 @@ public class ControlServlet extends HttpServlet   {
 	    	HttpSession session = request.getSession();
 
 //	        User currentUser = (User) session.getAttribute("currentUser");
-			User currentUser = userDAO.getUserByEmail("kkapoor@email.com"); 
+			User currentUser = userDAO.getUserByEmail("root"); 
 			session.setAttribute("currentUser", currentUser);
 			
 	        System.out.println("feedpage: " + currentUser);
@@ -298,11 +297,20 @@ public class ControlServlet extends HttpServlet   {
 
 	    private void listUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
 	    	HttpSession session = request.getSession();
-	        User currentUser = (User) session.getAttribute("currentUser");
+//	        User currentUser = (User) session.getAttribute("currentUser");
+	    	User currentUser = userDAO.getUserByEmail("kkapoor@email.com");
+	    	session.setAttribute("currentUser", currentUser);
 	          	
-			List<String> follows = followDAO.getFollowersEmails(currentUser.email);
+	    	List<User> allUsers = userDAO.getAllUsers();
+	    	List<Follow> followList =  new ArrayList<Follow>();
+	    	for(User otherUser: allUsers) {
+	    		boolean isFollowedByCurrentUser = followDAO.isUserFollowedByCurrentUser(currentUser.email, otherUser.email); 
+	    		Follow follow = new Follow(otherUser.email, isFollowedByCurrentUser); 
+	    		followList.add(follow); 
+	    	}
 			
-			request.setAttribute("followList", follows);
+			request.setAttribute("followList", followList);
+	    	request.setAttribute("allUsers", allUsers);
 			request.getRequestDispatcher("CommunityPage.jsp").forward(request, response);
 		}
 
@@ -311,38 +319,25 @@ public class ControlServlet extends HttpServlet   {
 	    	HttpSession session = request.getSession();
 	        User currentUser = (User) session.getAttribute("currentUser");
 	        
-	    	boolean status = Boolean.parseBoolean(request.getParameter("status"));
+	        String followUserEmail = request.getParameter("email"); 
+	    	followDAO.insert(currentUser.email, followUserEmail);
 
-			Follow followObj = new Follow(currentUser.email,request.getParameter("email"));
-			try {
-				if(status) {
-					followDAO.delete(followObj);
-				}
-				else {
-					followDAO.insert(followObj);
-				}
-				listUsers(request,response);
-			}
-			catch(SQLException e) {
-				System.out.println(e.getMessage());
-				listUsers(request,response);
-			}
+			response.sendRedirect("community");
 		}
+	    
+	    private void unfollow(HttpServletRequest request, HttpServletResponse response) throws SQLException,ServletException, IOException{
+	    	HttpSession session = request.getSession();
+	        User currentUser = (User) session.getAttribute("currentUser");
+	        
+	        String followUserEmail = request.getParameter("email"); 
+	    	followDAO.delete(currentUser.email, followUserEmail);
+
+			response.sendRedirect("community");
+		}
+	    
+	    
 
 
-	private void showHome(HttpServletRequest request, HttpServletResponse response)
-			throws SQLException, IOException, ServletException {
-		
-		HttpSession session = request.getSession();
-         
-//        User currentUser = (User) session.getAttribute("currentUser");
-		User currentUser = userDAO.getUserByEmail("jhalpert@email.com"); 
-		session.setAttribute("currentUser", currentUser);
-		System.out.println("\nhome user:" + session.getAttribute("currentUser").toString()); 
-		
-		RequestDispatcher dispatcher = request.getRequestDispatcher("Home.jsp");       
-        dispatcher.forward(request, response);
-	}
 
 	private void initializeDatabase(HttpServletRequest request, HttpServletResponse response) 
 			throws SQLException, IOException, ServletException {
@@ -382,7 +377,7 @@ public class ControlServlet extends HttpServlet   {
         
         
         
-        response.sendRedirect("home");
+        response.sendRedirect("feed");
         
 	}
 
@@ -414,7 +409,7 @@ public class ControlServlet extends HttpServlet   {
             System.out.println("Session ID: " + session.getId());
             System.out.println("Creation Time: " + new Date(session.getCreationTime()));
             System.out.println("Last Accessed Time: " + new Date(session.getLastAccessedTime()));
-            response.sendRedirect("home");  
+            response.sendRedirect("feed");  
         }  
     }
 
@@ -469,7 +464,7 @@ public class ControlServlet extends HttpServlet   {
             session.setAttribute("currentUser", currentUser);
         	userDAO.insert(currentUser); 
     	    System.out.println(currentUser.toString()); 
-            response.sendRedirect("home");      
+            response.sendRedirect("feed");      
         }
         
     	}

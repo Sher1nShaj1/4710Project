@@ -175,6 +175,33 @@ public class UserDAO {
 
     }       
 
+    public List<User> getAllUsers() throws SQLException{
+		List<User> users = new ArrayList<User>();
+		
+		connect_func();
+		
+		String sql = "SELECT firstName, lastName, email\r\n" + 
+				"FROM Users\r\n" + 
+				"WHERE email != 'root'"; 
+
+		preparedStatement = connect.prepareStatement(sql);
+		ResultSet resultSet = preparedStatement.executeQuery();
+		
+        
+        while (resultSet.next()) {
+
+            
+        	String email = resultSet.getString("email");
+            String firstName = resultSet.getString("firstName"); 
+            String lastName = resultSet.getString("lastName");
+
+            User user = new User(email, firstName, lastName); 
+            users.add(user);
+        }      
+        
+		disconnect();
+		return users;
+	}
 }
 
 
