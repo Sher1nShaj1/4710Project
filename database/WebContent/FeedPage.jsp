@@ -82,7 +82,7 @@ body {background-color: #ffd394;}
 		<c:forEach var="image" items="${feedImages}">
 			
 			<div  style="width:600px" class="w3-container w3-card w3-white w3-round w3-margin"><br>
-					<h4>${image.postUser.email}</h4><br>
+					<h4>${image.postUser.email} ${image.imgID}</h4><br>
 					<div class="w3-row-padding" style="margin:0 -16px">
 			        	<img src="${image.url}"style="width:100%" alt="sunset image" class="w3-margin-bottom">  
 					</div>
@@ -90,8 +90,26 @@ body {background-color: #ffd394;}
 					
 					
 					<div align="left">
+						
 						<span>
-							<a href="#" title="Love it" class="btn btn-counter" data-count="0"><span>&#x2764;</span>${image.likesCount}</a>
+							<c:if test="${image.isLiked == true}">
+								<form  action="/database-master_database/dislikePost">
+					            		<input type="hidden" name="imgID" value="${image.imgID}"/>
+						    			<input type="submit" value="Unlike" />
+				    			</form>
+					        </c:if>  
+							
+								   	
+						    <c:if test="${image.isLiked == false}">
+						    	<form  action="/database-master_database/likePost">
+				            		<input type="hidden" name="imgID" value="${image.imgID}"/>
+					    			<input type="submit" value="Like" />
+				    			</form> 
+				             </c:if> 
+					    	
+						    <p><span>&#x2764;</span>${image.likesCount}</p>
+							
+							
 						</span>
 						
 				        <p>${image.description}</p>

@@ -116,6 +116,12 @@ public class ControlServlet extends HttpServlet   {
             case "/feed":
             	feedPage(request,response);
             	break;
+            case "/likePost":
+            	likePost(request,response);
+            	break;
+            case "/dislikePost":
+            	dislikePost(request,response);
+            	break;
 			case "/follow":
 				follow(request,response);
 				break;
@@ -125,24 +131,24 @@ public class ControlServlet extends HttpServlet   {
         }
     }
     
-  private void likeImage(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException{
+   private void likePost(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException{
     	//String url = request.getParameter("url");
-	  HttpSession session = request.getSession();
-      User currentUser = (User) session.getAttribute("currentUser");
+		  HttpSession session = request.getSession();
+	      User currentUser = (User) session.getAttribute("currentUser");
       
-    	int id = Integer.parseInt(request.getParameter("id"));
-    	likesDAO.insert(currentUser.email, id);
-    	feedPage(request,response);
+	    int imgID = Integer.parseInt(request.getParameter("imgID"));
+    	likesDAO.insert(currentUser.email, imgID);
+    	response.sendRedirect("feed");  
     }
     
-    private void dislikeImage(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException{
+    private void dislikePost(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException{
     	//String url = request.getParameter("url");
     	HttpSession session = request.getSession();
         User currentUser = (User) session.getAttribute("currentUser");
         
-    	int id = Integer.parseInt(request.getParameter("id"));
-    	likesDAO.delete( id);
-    	feedPage(request,response);
+        int imgID = Integer.parseInt(request.getParameter("imgID"));
+    	likesDAO.delete( imgID);
+    	response.sendRedirect("feed");  
     }	
 	
    private void postImage(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
@@ -281,6 +287,7 @@ public class ControlServlet extends HttpServlet   {
 				tags = tagsDAO.getTagsForImage(image.imgID); 
 				image.setLikesCount(likeCount);
 				image.setTags(tags);
+				image.setLiked(likesDAO.isImageLikedByUser(currentUser.email, image.imgID)); 
 			}
 			
 			request.setAttribute("feedImages", feedImages);

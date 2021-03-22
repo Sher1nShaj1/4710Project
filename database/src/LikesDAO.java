@@ -199,6 +199,41 @@ public class LikesDAO {
 		disconnect();
 		return count;
 	}
+     
+     
+     public boolean isImageLikedByUser(String email, int imgID) throws SQLException {
+    	
+ 		connect_func();
+ 		
+ 		String sql = "SELECT  COUNT(email) as isLiked\r\n" + 
+ 				"FROM Likes\r\n" + 
+ 				"WHERE email = ? and imgID = ? ";
+
+ 		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+ 		preparedStatement.setString(1, email);
+ 		preparedStatement.setInt(2, imgID);
+ 		
+ 		ResultSet resultSet = preparedStatement.executeQuery();
+ 		
+ 		int isLikedInt = -1; 
+ 		while (resultSet.next()) {
+ 			isLikedInt = resultSet.getInt("isLiked");
+ 		}
+ 		
+ 		boolean isLiked; 
+ 		if(isLikedInt == 0) {
+ 			isLiked = false; 
+ 		}
+ 		else {
+ 			isLiked = true; 
+ 		}
+ 		
+
+ 		preparedStatement.close();
+
+ 		disconnect();
+ 		return isLiked;
+ 	}
 	
 	
   } 

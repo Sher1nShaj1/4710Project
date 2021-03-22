@@ -11,6 +11,7 @@ public class Image {
 	protected String postTime; 
 	protected int likesCount; 
 	protected String tags;
+	protected boolean isLiked; 
 	
 	
 	public Image(int imgID, String url, String description, User postUser, String postDate, String postTime,
@@ -24,6 +25,7 @@ public class Image {
 		this.postTime = postTime;
 		this.likesCount = likesCount;
 		this.tags = tags;
+		this.isLiked = false; 
 	}
 
 
@@ -35,6 +37,8 @@ public class Image {
 		this.postUser = postUser;
 		this.postDate = postDate;
 		this.postTime = postTime;
+		this.isLiked = false; 
+		
 	}
 
 
@@ -46,6 +50,7 @@ public class Image {
 		this.url = url;
 		this.description = description;
 		this.postUser = postUser;
+		this.isLiked = false; 
 	}
 
 
@@ -56,6 +61,7 @@ public class Image {
 		this.description = description;
 		this.postUser = postUser;
 		this.postTime = postTime;
+		this.isLiked = false; 
 	}
 	
 	
@@ -65,6 +71,7 @@ public class Image {
 		this.url = url;
 		this.description = description;
 		this.postUser = postUser;
+		this.isLiked = false; 
 	}
 
 
@@ -76,6 +83,7 @@ public class Image {
 		this.imgID = imgID;
 		this.url = url;
 		this.description = description;
+		this.isLiked = false; 
 	}
 
 
@@ -86,6 +94,7 @@ public class Image {
 		this.description = desc;
 		this.postUser = new User(em);
 		this.postTime = t;
+		this.isLiked = false; 
 	}
 
 
@@ -166,6 +175,16 @@ public class Image {
 
 	public void setTags(String tags) {
 		this.tags = tags;
+	}
+
+
+	public boolean getIsLiked() {
+		return isLiked;
+	}
+
+
+	public void setLiked(boolean isLiked) {
+		this.isLiked = isLiked;
 	}
 
 
