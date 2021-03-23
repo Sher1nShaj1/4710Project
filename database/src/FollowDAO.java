@@ -208,6 +208,51 @@ public class FollowDAO {
 	 		disconnect();
 	 		return isFollowed;
 	 	}
+	 
+	 
+	 public int getFollowerCount(String email) throws SQLException {
+			connect_func();
+	    	statement = connect.createStatement();
+	        String sql = "SELECT COUNT(followerEmail) as followerCount\r\n" + 
+	        		"FROM Follows\r\n" + 
+	        		"WHERE followingEmail = ?;";
+	        
+	        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+	        preparedStatement.setString(1, email); 
+	        
+	        ResultSet resultSet = preparedStatement.executeQuery();
+
+	        int followerCount = -1; 
+	        if (resultSet.next()) {
+	        	 
+	              followerCount = resultSet.getInt("followerCount");     
+	        }
+
+	        return followerCount;    
+		}
+	 
+	 
+	 public int getFollowingCount(String email) throws SQLException {
+			connect_func();
+	    	statement = connect.createStatement();
+	        String sql = "SELECT COUNT(followingEmail) as followingCount\r\n" + 
+	        		"FROM Follows\r\n" + 
+	        		"WHERE followerEmail = ?";
+	        
+	        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+	        preparedStatement.setString(1, email); 
+	        
+	        ResultSet resultSet = preparedStatement.executeQuery();
+
+	        int followingCount = -1; 
+	        if (resultSet.next()) {
+	        	 
+	        	followingCount = resultSet.getInt("followingCount");     
+	        }
+
+	        return followingCount;    
+		}
+		
 	
 	
 	

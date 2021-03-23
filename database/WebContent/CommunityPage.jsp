@@ -12,17 +12,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!--Search Bar-->
-<form  action="search" method="post">
-  
-   <input type="text"  name="searchInput"  placeholder="Search.." value="<c:out value='${searchInput}' />"/>
-  <input type="submit" value="Search" />
-</form>
-
-
-<!--Follow/Unfollow-->
+ 
+   
+ 	
 <body>
+ 	<h2 class="nav_bar">      
+    		
+    		 <a style="margin-right: 20px;"  href="/database-master_database/feed">Feed </a>
+    		 
+	         <a style="margin-right: 20px;" href="/database-master_database/userProfile">User Profile</a>
+	         
+	          <a  style="margin-right: 20px;" href="/database-master_database/community">Community</a>   
+ 	</h2>
+ 	
+ 	
+	<form  action="search" >
+	  
+	   <input type="text"  name="searchInput"  placeholder="Search.." value="<c:out value='${searchInput}' />"/>
+	  <input type="submit" value="Search" />
+	</form>
+	
 	<div align="center">
+		
+
+
 		<c:forEach var="user" items="${allUsers}" varStatus="loop">
 		
 				

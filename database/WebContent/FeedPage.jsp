@@ -47,17 +47,7 @@ body {background-color: #ffd394;}
 
 
 <!-- The bar to navigate to community page -->
-<div class="icon-bar"> 
-<a href="CommunityPage.html"><i class="fa fa-search"></i></a> 
-</div>
 
-
-<!--Form to post picture -->
-<div id="postImageForm">
-<div class="w3-row-padding">
-<div class="w3-col m12">
-<div class="w3-card w3-round w3-white">
-<div class="w3-container w3-padding">
     
     <h2 >      
     		
@@ -85,12 +75,7 @@ body {background-color: #ffd394;}
         </form>
      </c:if>
     </div>  
-    
-</div>
-</div>
-</div>
-</div>
-</div>
+
 
      
 <!--Post-->
@@ -98,7 +83,7 @@ body {background-color: #ffd394;}
 		<c:forEach var="image" items="${feedImages}">
 			
 			<div  style="width:600px" class="w3-container w3-card w3-white w3-round w3-margin"><br>
-					<h4>${image.postUser.email} ${image.imgID}</h4><br>
+					<h4>${image.postUser.email}</h4><br>
 					<div class="w3-row-padding" style="margin:0 -16px">
 			        	<img src="${image.url}"style="width:100%" alt="sunset image" class="w3-margin-bottom">  
 					</div>

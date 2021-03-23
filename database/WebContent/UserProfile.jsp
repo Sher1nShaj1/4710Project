@@ -23,9 +23,9 @@
      	
      
      	<div align="center">
-     	<h1>User: ${sessionScope.currentUser.email}</h1>
+     	<h1>${sessionScope.currentUser.email}</h1>
 	 	<p>Welcome  ${sessionScope.currentUser.firstName} ${sessionScope.currentUser.lastName} !</p>
-	 	
+	 	<p>Followers: ${sessionScope.currentUser.numOfFollowers} Following: ${sessionScope.currentUser.numOfFollowings}</p>
 	 	
 	 	
 	     <form  style="margin-bottom:20px;"  action="/database-master_database/userProfile/createPost">
@@ -44,7 +44,7 @@
     	  <table style="margin-bottom:30px;" border="3" cellpadding="5">
         	<tr>
                 <td >
-                   User: ${image.postUser.email}
+                    ${image.postUser.email}
                    
                     <form style="float: right;" action="/database-master_database/userProfile/editPost">
                     
@@ -65,12 +65,7 @@
            
                 </td>
             </tr>
-            <tr>
-            	<td colspan="3">
-            	  	<button type="button" onclick="alert('Hello world!')">Like</button>
-                </td>
-               
-            </tr>
+            
             <tr>
                 <td  colspan="3">
                     Description: ${image.description}

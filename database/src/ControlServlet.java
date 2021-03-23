@@ -38,7 +38,6 @@ public class ControlServlet extends HttpServlet   {
     private LikesDAO likeDAO;
     private TagsDAO tagsDAO;
 	private LikesDAO likesDAO; 
-	private String currentUser;
   
     
     public void init(){
@@ -51,7 +50,6 @@ public class ControlServlet extends HttpServlet   {
 			commentsDAO = new CommentsDAO(); 
 			likesDAO = new LikesDAO(); 
 			tagsDAO = new TagsDAO();
-			currentUser = "";
 			
 			
 		} catch (SQLException e) {
@@ -145,8 +143,6 @@ public class ControlServlet extends HttpServlet   {
     }
     
     private void dislikePost(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException{
-    	HttpSession session = request.getSession();
-        User currentUser = (User) session.getAttribute("currentUser");
         
         int imgID = Integer.parseInt(request.getParameter("imgID"));
     	likesDAO.delete( imgID);
@@ -273,11 +269,7 @@ public class ControlServlet extends HttpServlet   {
 	   private void feedPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
 	    	HttpSession session = request.getSession();
 
-//	        User currentUser = (User) session.getAttribute("currentUser");
-			User currentUser = userDAO.getUserByEmail("root"); 
-			session.setAttribute("currentUser", currentUser);
-			
-	        System.out.println("feedpage: " + currentUser);
+	        User currentUser = (User) session.getAttribute("currentUser");
 	        
 	        
 	    	List<Image> feedImages = imageDAO.getFeed(currentUser.email);
@@ -300,9 +292,7 @@ public class ControlServlet extends HttpServlet   {
 	   
 	   private void search(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
 	    	HttpSession session = request.getSession();
-//	        User currentUser = (User) session.getAttribute("currentUser");
-	    	User currentUser = userDAO.getUserByEmail("kkapoor@email.com");
-	    	session.setAttribute("currentUser", currentUser);
+	        User currentUser = (User) session.getAttribute("currentUser");
 	    	
 	    	String searchInput = request.getParameter("searchInput");
 	    	List<User> allUsers = new ArrayList<User>(); 
@@ -336,9 +326,7 @@ public class ControlServlet extends HttpServlet   {
 
 	    private void listUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
 	    	HttpSession session = request.getSession();
-//	        User currentUser = (User) session.getAttribute("currentUser");
-	    	User currentUser = userDAO.getUserByEmail("kkapoor@email.com");
-	    	session.setAttribute("currentUser", currentUser);
+	        User currentUser = (User) session.getAttribute("currentUser");
 	    	
 	    	String searchInput = request.getParameter("searchInput");
 	    	List<User> allUsers = new ArrayList<User>(); 
@@ -381,7 +369,16 @@ public class ControlServlet extends HttpServlet   {
 	        
 	        String followUserEmail = request.getParameter("email"); 
 	    	followDAO.insert(currentUser.email, followUserEmail);
-
+	    	
+	    	// update current user 
+	    	currentUser.numOfFollowings++; 
+	    	boolean updatedFollowing =userDAO.updateNumFollowings(currentUser.email, currentUser.numOfFollowings);
+	    	
+	    	
+	    	// update the user that is being followed by current user
+	    	int numFollowers = followDAO.getFollowerCount(followUserEmail); 
+	    	boolean isUpdated = userDAO.updateNumFollowers(followUserEmail, numFollowers);
+	    	
 			response.sendRedirect("community");
 		}
 	    
@@ -391,6 +388,16 @@ public class ControlServlet extends HttpServlet   {
 	        
 	        String followUserEmail = request.getParameter("email"); 
 	    	followDAO.delete(currentUser.email, followUserEmail);
+	    	
+	    	// update current user 
+	    	currentUser.numOfFollowings--; 
+	    	boolean updatedFollowing =userDAO.updateNumFollowings(currentUser.email, currentUser.numOfFollowings);
+	    	
+	    	
+	    	// update the user that is being unfollowed by current user
+	    	int numFollowers = followDAO.getFollowerCount(followUserEmail); 
+	    	boolean isUpdated = userDAO.updateNumFollowers(followUserEmail, numFollowers);
+	    	
 
 			response.sendRedirect("community");
 		}
@@ -413,8 +420,7 @@ public class ControlServlet extends HttpServlet   {
 	   		 followDAO.dropTable();
 	   		 imageDAO.dropTable();
 	   		 userDAO.dropTable();
-	   		  
-	   		 
+	   		  	   		 
 	   		 
 	   		 int rowsCreatedUsers = userDAO.createTable();
 	   		 int rowsCreatedImages = imageDAO.createTable();
@@ -424,15 +430,12 @@ public class ControlServlet extends HttpServlet   {
 	   		 int rowsCreatedFollow = followDAO.createTable();
 	   	 
 	   
-	   		 
-	   		 
 	   		 userDAO.fillTable(); 
 	   		 imageDAO.fillTable();
 	   		 tagsDAO.fillTable(); 
 	   		 commentsDAO.fillTable();
 	   		 likesDAO.fillTable(); 
 	   		 followDAO.fillTable(); 
-   		
         }  
         
         
@@ -466,9 +469,9 @@ public class ControlServlet extends HttpServlet   {
         else {
         	HttpSession session = request.getSession();
             session.setAttribute("currentUser", currentUser);  
-            System.out.println("Session ID: " + session.getId());
-            System.out.println("Creation Time: " + new Date(session.getCreationTime()));
-            System.out.println("Last Accessed Time: " + new Date(session.getLastAccessedTime()));
+            
+            currentUser.numOfFollowers = followDAO.getFollowerCount(currentUser.email);
+            currentUser.numOfFollowings = followDAO.getFollowingCount(currentUser.email);
             response.sendRedirect("feed");  
         }  
     }

@@ -124,7 +124,7 @@ public class ImageDAO {
 		List<Image> imageList = new ArrayList<Image>();        
         String sql = String.format( "SELECT imageID, url, description, postTime\r\n" + 
         							"FROM Images, Users\r\n" + 
-        							"WHERE Users.email = ? && postUser = Users.email");
+        							"WHERE Users.email = ? && postUser = Users.email  ORDER BY postTime DESC");
         
          
         connect_func();      

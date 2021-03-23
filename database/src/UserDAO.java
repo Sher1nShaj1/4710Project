@@ -127,9 +127,7 @@ public class UserDAO {
     
     public boolean insert(User user) throws SQLException {
     	
-    	connect_func();   
-//    	INSERT INTO Users(email, password, firstName, lastName, gender, birthday, numOfFollowers, numOfFollowings) VALUES('jhalpert@email.com', 'pass',  'Jim', 'Halpert' , 'M', '1980-1-11', 446, 345); 
-
+    	connect_func();
 		String sql = "INSERT INTO Users(email, password, firstName, lastName, gender, birthday, numOfFollowers, numOfFollowings) VALUES(?, ?, ?, ?, ?, ?, ?, ?)"; 
     	
 		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
@@ -148,6 +146,47 @@ public class UserDAO {
         preparedStatement.close();
         return rowInserted;
     }  
+    
+    
+    public boolean updateNumFollowers(String email, int followerCount) throws SQLException {
+    	
+    	connect_func();
+		String sql = "UPDATE Users\r\n" + 
+				"SET numOfFollowers = ?\r\n" + 
+				"WHERE email = ?"; 
+		
+				preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+			preparedStatement.setInt(1, followerCount);
+			preparedStatement.setString(2, email);
+		
+		
+		
+		
+        boolean rowUpdated = preparedStatement.executeUpdate() > 0;
+        preparedStatement.close();
+        return rowUpdated;
+    }  
+    
+    public boolean updateNumFollowings(String email, int followingCount) throws SQLException {
+    	
+    	connect_func();
+		String sql = "UPDATE Users\r\n" + 
+				"SET numOfFollowings = ?\r\n" + 
+				"WHERE email = ?"; 
+		
+				preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+			preparedStatement.setInt(1, followingCount);
+			preparedStatement.setString(2, email);
+		
+		
+		
+		
+        boolean rowUpdated = preparedStatement.executeUpdate() > 0;
+        preparedStatement.close();
+        return rowUpdated;
+    }  
+ 
+ 
     
     public User getUserByEmail(String inputEmail) throws SQLException {
     	connect_func();
