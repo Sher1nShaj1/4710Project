@@ -143,9 +143,11 @@ public class ControlServlet extends HttpServlet   {
     }
     
     private void dislikePost(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException{
-        
+    	 HttpSession session = request.getSession();
+         User currentUser = (User) session.getAttribute("currentUser");
+         
         int imgID = Integer.parseInt(request.getParameter("imgID"));
-    	likesDAO.delete( imgID);
+    	likesDAO.delete( currentUser.email, imgID);
     	response.sendRedirect("feed");  
     }	
 	

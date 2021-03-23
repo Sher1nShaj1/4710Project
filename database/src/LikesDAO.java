@@ -148,12 +148,13 @@ public class LikesDAO {
 
 	  }  
 	  
-	  public boolean delete(int imgID) throws SQLException {
-	        String sql = "DELETE FROM Likes WHERE imgID = ? "; 
+	  public boolean delete(String email, int imgID) throws SQLException {
+	        String sql = "DELETE FROM Likes WHERE imgID = ? AND email = ? "; 
 	        connect_func();
 	         
 	        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
 	        preparedStatement.setInt(1, imgID);
+	        preparedStatement.setString(2, email);
 	         
 	        boolean rowDeleted = preparedStatement.executeUpdate() > 0;
 	        preparedStatement.close();
