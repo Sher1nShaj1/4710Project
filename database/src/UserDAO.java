@@ -182,7 +182,8 @@ public class UserDAO {
 		
 		String sql = "SELECT firstName, lastName, email\r\n" + 
 				"FROM Users\r\n" + 
-				"WHERE email != 'root'"; 
+				"WHERE email != 'root'\r\n" + 
+				"ORDER BY lastName ASC, firstName ASC "; 
 
 		preparedStatement = connect.prepareStatement(sql);
 		ResultSet resultSet = preparedStatement.executeQuery();
@@ -190,7 +191,42 @@ public class UserDAO {
         
         while (resultSet.next()) {
 
-            
+       
+        	String email = resultSet.getString("email");
+            String firstName = resultSet.getString("firstName"); 
+            String lastName = resultSet.getString("lastName");
+
+            User user = new User(email, firstName, lastName); 
+            users.add(user);
+        }      
+        
+		disconnect();
+		return users;
+	}
+    
+    
+    public List<User> searchUser(String searchFirstName, String searchLastName) throws SQLException{
+		List<User> users = new ArrayList<User>();
+		
+		connect_func();
+		
+		
+		String sql = "SELECT firstName, lastName, email\r\n" + 
+				"FROM Users\r\n" + 
+				"WHERE ((firstName LIKE '%" + searchFirstName + "%' and  lastName LIKE '%" + searchLastName + "%') or\r\n" + 
+				"       (firstName LIKE '%" + searchLastName + "%' and lastName LIKE '%" + searchFirstName + "%')) and" +
+				"       email != 'root'\r\n" + 
+				"ORDER BY lastName ASC, firstName ASC "; 
+		
+		
+		System.out.println(sql); 
+		preparedStatement = connect.prepareStatement(sql);
+		ResultSet resultSet = preparedStatement.executeQuery();
+		
+        
+        while (resultSet.next()) {
+
+       
         	String email = resultSet.getString("email");
             String firstName = resultSet.getString("firstName"); 
             String lastName = resultSet.getString("lastName");

@@ -33,6 +33,8 @@ public class User {
 		this.birthday = "";
 		this.numOfFollowers = 0;
 		this.numOfFollowings = 0;
+		
+		
     }
  
     

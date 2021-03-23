@@ -111,6 +111,9 @@ public class ControlServlet extends HttpServlet   {
             case "/community":
             	listUsers(request,response);
             	break;
+            case "/search":
+            	search(request,response);
+            	break;
             case "/feed":
             	feedPage(request,response);
             	break;
@@ -294,14 +297,71 @@ public class ControlServlet extends HttpServlet   {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("FeedPage.jsp");       
 	        dispatcher.forward(request, response);
 		}
+	   
+	   private void search(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
+	    	HttpSession session = request.getSession();
+//	        User currentUser = (User) session.getAttribute("currentUser");
+	    	User currentUser = userDAO.getUserByEmail("kkapoor@email.com");
+	    	session.setAttribute("currentUser", currentUser);
+	    	
+	    	String searchInput = request.getParameter("searchInput");
+	    	List<User> allUsers = new ArrayList<User>(); 
+	    	System.out.println("\n\nout searchInput: " + searchInput);
+    		
+    		int spaceIndex = searchInput.indexOf(' '); 
+    		if(spaceIndex == -1) {
+    			allUsers = userDAO.searchUser(searchInput, "");
+    		}
+    		else {
+    			String firstName = searchInput.substring(0, searchInput.indexOf(' '));
+	    		String lastName = searchInput.substring(1, searchInput.indexOf(' '));
+	    		allUsers = userDAO.searchUser(firstName, lastName); 
+    		}
+	    
+	    	
+	    	List<Follow> followList =  new ArrayList<Follow>();
+	    	System.out.println("found users: "); 
+	    	for(User otherUser: allUsers) {
+	    		System.out.println(otherUser.toString()); 
+	    		boolean isFollowedByCurrentUser = followDAO.isUserFollowedByCurrentUser(currentUser.email, otherUser.email); 
+	    		Follow follow = new Follow(otherUser.email, isFollowedByCurrentUser); 
+	    		followList.add(follow); 
+	    	}
+			
+			request.setAttribute("followList", followList);
+	    	request.setAttribute("allUsers", allUsers);
+			request.getRequestDispatcher("CommunityPage.jsp").forward(request, response);
+		}
+
 
 	    private void listUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
 	    	HttpSession session = request.getSession();
 //	        User currentUser = (User) session.getAttribute("currentUser");
 	    	User currentUser = userDAO.getUserByEmail("kkapoor@email.com");
 	    	session.setAttribute("currentUser", currentUser);
-	          	
-	    	List<User> allUsers = userDAO.getAllUsers();
+	    	
+	    	String searchInput = request.getParameter("searchInput");
+	    	List<User> allUsers = new ArrayList<User>(); 
+	    	System.out.println("\n\nout searchInput: " + searchInput);
+	    	
+	    	if(searchInput != null) {
+	    		
+	    		System.out.println("in searchInput: " + searchInput);
+	    		
+	    		int spaceIndex = searchInput.indexOf(' '); 
+	    		if(spaceIndex == -1) {
+	    			allUsers = userDAO.searchUser(searchInput, " ");
+	    		}
+	    		else {
+	    			String firstName = searchInput.substring(0, searchInput.indexOf(' '));
+		    		String lastName = searchInput.substring(1, searchInput.indexOf(' '));
+		    		allUsers = userDAO.searchUser(firstName, lastName); 
+	    		}
+	    	}
+	    	else {
+	    		allUsers = userDAO.getAllUsers();
+	    	}
+	    	
 	    	List<Follow> followList =  new ArrayList<Follow>();
 	    	for(User otherUser: allUsers) {
 	    		boolean isFollowedByCurrentUser = followDAO.isUserFollowedByCurrentUser(currentUser.email, otherUser.email); 
