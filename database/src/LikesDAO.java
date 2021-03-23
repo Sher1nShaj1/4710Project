@@ -97,7 +97,7 @@ public class LikesDAO {
 	    String sql3 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('kmalone@email.com', 3, '2013-7-05')";
 	    String sql4 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('kmalone@email.com', 5, '2007-7-11')";
 	    String sql5 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('pbeesly@email.com', 5, '2018-7-14')";
-	    String sql6 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('jhalpert@email.com', 9, '2021-7-27')";
+	    String sql6 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('jhalpert@email.com', 9, '2020-7-27')";
 	    String sql7 = "INSERT INTO Likes(email, imgID,likeDate) VALUES('dschrute@email.com', 4, '2007-2-18')";
 	    String sql8 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('dschrute@email.com', 8, '2007-7-3')";
 	    String sql9 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('jhalpert@email.com', 5, '2007-10-11')";

@@ -198,12 +198,14 @@ public class ControlServlet extends HttpServlet   {
 	}
    
    private void deletePost(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
+	   HttpSession session = request.getSession();
+       User currentUser = (User) session.getAttribute("currentUser");
 	   String imgIDString = request.getParameter("imgID"); 
 	   int imgID = Integer.parseInt(imgIDString);
 	   
 	   boolean areTagsDeleted = tagsDAO.delete(imgID); 
 	   boolean areCommentsDeleted = commentsDAO.delete(imgID);  
-	   boolean areLikesDeleted = likesDAO.delete(imgID); 
+	   boolean areLikesDeleted = likesDAO.delete(currentUser.email, imgID); 
 	   	
   
 	   boolean isImgDeleted = imageDAO.delete(imgID); 
