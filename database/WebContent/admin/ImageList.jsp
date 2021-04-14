@@ -8,7 +8,7 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>User Profile</title>
+	<title>${imageListTitle}</title>
 </head>
 <body>
  	<div style = "background-color: lightblue;" >
@@ -29,15 +29,7 @@
      	
      
      	<div align="center">
-     	<h1>${sessionScope.currentUser.email}</h1>
-	 	<p>Welcome  ${sessionScope.currentUser.firstName} ${sessionScope.currentUser.lastName} !</p>
-	 	<p>Followers: ${sessionScope.currentUser.numOfFollowers} Following: ${sessionScope.currentUser.numOfFollowings}</p>
-	 	
-	 	
-	     <form  style="margin-bottom:20px;"  action="/database-master_database/userProfile/createPost">
-	    	<input type="submit" value="Create New Post" />
-		 </form> 
-		 <hr style="margin-bottom:30px;" >
+     		<h1>${imageListTitle}</h1>
      	 </div>
  	 	 
  	</div>
@@ -52,18 +44,6 @@
                 <td >
                     ${image.postUser.email}
                    
-                    <form style="float: right;" action="/database-master_database/userProfile/editPost">
-                    
-	                    <input type="hidden" name="imgID" value="${image.imgID}"/>
-				    	<input type="submit" value="Edit" />
-				    	
-					</form> 
-					<form style="float: right;" action="/database-master_database/userProfile/deletePost">
-					
-					   <input type="hidden" name="imgID" value="${image.imgID}"/>
-				    	<input type="submit" value="Delete" />
-				    	
-					</form>   
             </tr> 
             <tr>
                 <td colspan="3">
@@ -75,11 +55,6 @@
             <tr>
                 <td  colspan="3">
                     Description: ${image.description}
-                </td>
-            </tr>
-            <tr>
-                <td colspan="3">
-                    Tags: ${image.tags}
                 </td>
             </tr>
 

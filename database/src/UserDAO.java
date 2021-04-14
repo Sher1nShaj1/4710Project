@@ -174,7 +174,7 @@ public class UserDAO {
 				"SET numOfFollowings = ?\r\n" + 
 				"WHERE email = ?"; 
 		
-				preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+			preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
 			preparedStatement.setInt(1, followingCount);
 			preparedStatement.setString(2, email);
 		
@@ -207,7 +207,6 @@ public class UserDAO {
               String gender = resultSet.getString("gender");
               String birthday = resultSet.getString("birthday"); 
               user = new User(email, password, firstName, lastName, gender, birthday); 
-              System.out.println("userDAO: " + user.toString());
         }
 
         return user; 
@@ -257,8 +256,6 @@ public class UserDAO {
 				"       email != 'root'\r\n" + 
 				"ORDER BY lastName ASC, firstName ASC "; 
 		
-		
-		System.out.println(sql); 
 		preparedStatement = connect.prepareStatement(sql);
 		ResultSet resultSet = preparedStatement.executeQuery();
 		
@@ -277,6 +274,124 @@ public class UserDAO {
 		disconnect();
 		return users;
 	}
+    
+    /*
+     * [Popular users]: users that  are followed by at least 5 followers.    
+     */
+    
+    public List<User> getPopularUsers() throws SQLException{
+		List<User> users = new ArrayList<User>();
+		
+		connect_func();
+		
+		String sql = "select *\r\n" + 
+				"from Users \r\n" + 
+				"where email in (\r\n" + 
+				"	select followingEmail\r\n" + 
+				"	from follows\r\n" + 
+				"	group by followingEmail\r\n" + 
+				"	having count(*) >= 5\r\n" + 
+				")"; 
+		
+	
+		preparedStatement = connect.prepareStatement(sql);
+		ResultSet resultSet = preparedStatement.executeQuery();
+		
+        
+        while (resultSet.next()) {
+        	 String email = resultSet.getString("email");
+             String password = resultSet.getString("password");
+             String firstName = resultSet.getString("firstName"); 
+             String lastName = resultSet.getString("lastName");
+             String gender = resultSet.getString("gender");
+             String birthday = resultSet.getString("birthday"); 
+             
+             User user = new User(email, password, firstName, lastName, gender, birthday); 
+             users.add(user);
+        }      
+        
+		disconnect();
+		return users;
+	}
+    
+	/*
+	 * Returns an int representing the maximum number of postings
+	 * returns -1 if no posts found
+	 */
+	
+	private int getMaxPostCount() throws SQLException{
+		
+		connect_func(); 
+    	
+    	String sql = "select count(*) as maxPostCount\r\n" + 
+    			"	from images\r\n" + 
+    			"	group by postUser\r\n" + 
+    			"	order by count(*) desc \r\n" + 
+    			"	limit 1 "; 
+		
+		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+		ResultSet resultSet = preparedStatement.executeQuery();
+		
+		int maxPostCount = -1; 
+        while (resultSet.next()) {
+             maxPostCount = resultSet.getInt("maxPostCount"); 
+        }      
+        disconnect();
+        preparedStatement.close();
+        return maxPostCount;	
+	}
+	
+	/*
+	 * [Top users]: List users that have the most number of postings.  List the top user if there is no tie,
+	 *  list all the tied top users if there is a tie. 
+	 */
+	
+	 public List<User> getTopUsers() throws SQLException{
+			List<User> users = new ArrayList<User>();
+			
+			connect_func();
+			
+			int maxPostCount  = this.getMaxPostCount(); 
+			if(maxPostCount == -1) {
+				return users; 
+			}
+			
+			connect_func();
+			String sql = "select U.*\r\n" + 
+					"	from images I , Users U\r\n" + 
+					"    where I.postUser = U.email\r\n" + 
+					"	group by I.postUser\r\n" + 
+					"	having count(*) = ?"; 
+			
+		
+			preparedStatement = connect.prepareStatement(sql);
+			preparedStatement.setInt(1, maxPostCount);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			
+	        
+	        while (resultSet.next()) {
+	        	 String email = resultSet.getString("email");
+	             String password = resultSet.getString("password");
+	             String firstName = resultSet.getString("firstName"); 
+	             String lastName = resultSet.getString("lastName");
+	             String gender = resultSet.getString("gender");
+	             String birthday = resultSet.getString("birthday"); 
+	             int numOfFollowers = resultSet.getInt("numOfFollowers"); 
+	             int numOFFollowings = resultSet.getInt("numOfFollowings"); 
+	             
+	             User user = new User(email, password, firstName, lastName, gender, birthday, numOfFollowers, numOFFollowings); 
+	             users.add(user);
+	        }      
+	        
+			disconnect();
+			return users;
+		}
+	
+	
+	
+	
+	
+	
 }
 
 

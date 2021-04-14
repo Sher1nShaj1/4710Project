@@ -127,13 +127,104 @@ public class ControlServlet extends HttpServlet   {
 			case "/unfollow":
 				unfollow(request,response);
 				break;
+			case "/admin":
+				showAdminPage(request, response); 
+				break; 
+			case "/admin/coolImages":
+				showCoolImages(request, response); 
+				break; 
+			case "/admin/newImages":
+				showNewImages(request, response); 
+				break;
+			case "/admin/viralImages":
+				showViralImages(request, response); 
+				break;
+			case "/admin/topUsers":
+				showTopUsers(request, response); 
+				break;
+			case "/admin/popularUsers":
+				showPopularUsers(request, response); 
+				break;
+			case "/test":
+				test(request, response); 
+				break; 
             }
         } catch (SQLException ex) {
             throw new ServletException(ex);
         }
     }
     
-   private void likePost(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException{
+    
+
+    private void showPopularUsers(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+    	  List<User> userList = userDAO.getPopularUsers();
+   	   String userListTitle = "Popular Users"; 
+   	   RequestDispatcher dispatcher = request.getRequestDispatcher("UserList.jsp"); 
+   	    request.setAttribute("userList", userList);
+   	    request.setAttribute("userListTitle", userListTitle);
+          dispatcher.forward(request, response);
+		
+	}
+
+	private void showTopUsers(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+    	 List<User> userList = userDAO.getTopUsers();
+	  	   String userListTitle = "Top Users"; 
+	  	   RequestDispatcher dispatcher = request.getRequestDispatcher("UserList.jsp"); 
+	  	    request.setAttribute("userList", userList);
+	  	    request.setAttribute("userListTitle", userListTitle);
+         dispatcher.forward(request, response);
+	}
+
+	private void test(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+//	   List<Image> imageList = imageDAO.getViralImages();
+//	   for(Image image: imageList) {
+//		   System.out.println(image.toString()); 
+//	   }
+//	   
+	   List<User> userList = userDAO.getPopularUsers();
+	   String userListTitle = "Popular Users"; 
+	   RequestDispatcher dispatcher = request.getRequestDispatcher("admin/UserList.jsp"); 
+	    request.setAttribute("userList", userList);
+	    request.setAttribute("userListTitle", userListTitle);
+       dispatcher.forward(request, response);
+	}
+    
+   private void showCoolImages(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+	   List<Image> imageList = imageDAO.getCoolImages();
+	   String imageListTitle = "Cool Images"; 
+	   RequestDispatcher dispatcher = request.getRequestDispatcher("ImageList.jsp"); 
+	    request.setAttribute("imageList", imageList);
+	    request.setAttribute("imageListTitle", imageListTitle);
+       dispatcher.forward(request, response);
+	}
+   
+   private void showNewImages(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+	   List<Image> imageList = imageDAO.getNewImages();
+	   String imageListTitle = "New Images"; 
+	   RequestDispatcher dispatcher = request.getRequestDispatcher("ImageList.jsp"); 
+	    request.setAttribute("imageList", imageList);
+	    request.setAttribute("imageListTitle", imageListTitle);
+       dispatcher.forward(request, response);
+	}
+   
+   private void showViralImages(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+	   List<Image> imageList = imageDAO.getViralImages();
+	   String imageListTitle = "Viral Images"; 
+	   RequestDispatcher dispatcher = request.getRequestDispatcher("ImageList.jsp"); 
+	    request.setAttribute("imageList", imageList);
+	    request.setAttribute("imageListTitle", imageListTitle);
+       dispatcher.forward(request, response);
+	}
+   
+
+private void showAdminPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+	   RequestDispatcher dispatcher = request.getRequestDispatcher("Admin.jsp");       
+       dispatcher.forward(request, response);
+		
+	}
+
+private void likePost(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException{
 		  HttpSession session = request.getSession();
 	      User currentUser = (User) session.getAttribute("currentUser");
       
@@ -413,10 +504,10 @@ public class ControlServlet extends HttpServlet   {
 	private void initializeDatabase(HttpServletRequest request, HttpServletResponse response) 
 			throws SQLException, IOException, ServletException {
 		
-		HttpSession session = request.getSession();  
-        User currentUser = (User) session.getAttribute("currentUser");
+//		HttpSession session = request.getSession();  
+//        User currentUser = (User) session.getAttribute("currentUser");
 		
-        if(currentUser.email.equals("root")){
+//        if(currentUser.email.equals("root")){
     		
 	   		 tagsDAO.dropTable();
 	   		 commentsDAO.dropTable();  
@@ -440,11 +531,11 @@ public class ControlServlet extends HttpServlet   {
 	   		 commentsDAO.fillTable();
 	   		 likesDAO.fillTable(); 
 	   		 followDAO.fillTable(); 
-        }  
+//        }  
         
         
         
-        response.sendRedirect("feed");
+//        response.sendRedirect("feed");
         
 	}
 

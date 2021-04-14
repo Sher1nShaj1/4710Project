@@ -102,9 +102,9 @@ public class LikesDAO {
 	    String sql8 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('dschrute@email.com', 8, '2007-7-3')";
 	    String sql9 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('jhalpert@email.com', 5, '2007-10-11')";
 	    String sql10 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('pbeesly@email.com', 1, '2017-7-11')";
-	    
+	    String sql11 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('amartin@email.com', 5,  '2016-9-20');";
+	    String sql12 = "INSERT INTO Likes(email, imgID, likeDate) VALUES('abernard@email.com', 5,  '2017-1-11');";
 
-	    
 	
 	    boolean rowInserted1 = statement.executeUpdate(sql1) > 0;
     	boolean rowInserted2 =statement.executeUpdate(sql2) > 0;
@@ -116,9 +116,11 @@ public class LikesDAO {
     	boolean rowInserted8 =statement.executeUpdate(sql8) > 0;
     	boolean rowInserted9 =statement.executeUpdate(sql9) > 0;
     	boolean rowInserted10 =statement.executeUpdate(sql10) > 0;
+    	boolean rowInserted11 =statement.executeUpdate(sql11) > 0;
+    	boolean rowInserted12 =statement.executeUpdate(sql12) > 0;
     	
     	 return ( rowInserted1 && rowInserted2 && rowInserted3 && rowInserted4 && rowInserted5 
-    			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted10 ); 
+    			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted10 && rowInserted11 && rowInserted12); 
 	}
 	
 	  public boolean insert(String email, int imgID) throws SQLException {

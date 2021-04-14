@@ -16,15 +16,19 @@
    
  	
 <body>
- 	<h2 class="nav_bar">      
-    		
-    		 <a style="margin-right: 20px;"  href="/database-master_database/feed">Feed </a>
+ 	 <h2 >      
+    		<a style="margin-right: 20px;"  href="/database-master_database/feed">Feed </a>
     		 
-	         <a style="margin-right: 20px;" href="/database-master_database/userProfile">User Profile</a>
+	       	<a style="margin-right: 20px;" href="/database-master_database/userProfile">User Profile</a>
 	         
-	          <a  style="margin-right: 20px;" href="/database-master_database/community">Community</a>   
+	        <a  style="margin-right: 20px;" href="/database-master_database/community">Community</a>
+	          
+            <c:if test="${sessionScope.currentUser.email.equals('root')}">
+           
+		    	 <a  style="margin-right: 20px;" href="/database-master_database/admin">Administration</a>
+		    	 
+		    </c:if>                    
  	</h2>
- 	
  	
 	<form  action="search" >
 	  

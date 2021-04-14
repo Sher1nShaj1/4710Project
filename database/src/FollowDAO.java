@@ -101,7 +101,8 @@ public class FollowDAO {
     	String sql8 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('mscott@email.com', 'kmalone@email.com')";
     	String sql9 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('cbratton@email.com', 'mscott@email.com')";
     	String sql10 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('kkapoor@email.com', 'cbratton@email.com')"; 
-    	 
+    	String sql11 = "INSERT INTO Follows(followingEmail, followerEmail) VALUES('kkapoor@email.com', 'pbeesly@email.com')"; 
+    	String sql12 = "INSERT INTO Follows(followingEmail, followerEmail) VALUES('kkapoor@email.com', 'mscott@email.com')" ; 
     	
     	
     		
@@ -115,9 +116,11 @@ public class FollowDAO {
     	boolean rowInserted8 =statement.executeUpdate(sql8) > 0;
     	boolean rowInserted9 =statement.executeUpdate(sql9) > 0;
     	boolean rowInserted10 =statement.executeUpdate(sql10) > 0;
+    	boolean rowInserted11 =statement.executeUpdate(sql11) > 0;
+    	boolean rowInserted12 =statement.executeUpdate(sql12) > 0;
     	
     	 return ( rowInserted1 && rowInserted2 && rowInserted3 && rowInserted4 && rowInserted5 
-    			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted10 ); 
+    			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted10 && rowInserted11 && rowInserted12); 
     }
     
 

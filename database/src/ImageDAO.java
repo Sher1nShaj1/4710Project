@@ -96,12 +96,15 @@ public class ImageDAO {
 	    String sql1 = "INSERT INTO Images(url, description, postUser, postDate, postTime) VALUES('https://ogden_images.s3.amazonaws.com/www.observertoday.com/images/2020/08/29003327/SUNSET-scaled.jpg','dusk', 'mscott@email.com', '2012-5-11' , '2012-5-11 05:23:44')";
 		String sql2 = "INSERT INTO Images(url, description, postUser, postDate, postTime) VALUES('https://upload.wikimedia.org/wikipedia/commons/a/a4/Anatomy_of_a_Sunset-2.jpg','cloudscape', 'dschrute@email.com', '2004-5-11' , '2004-5-11 04:24:44')"; 
 		String sql3 = "INSERT INTO Images(url, description, postUser, postDate, postTime) VALUES('https://i.pinimg.com/originals/66/05/a1/6605a1be5ff2358644d11520ae4b77f8.jpg','horizon', 'pbeesly@email.com', '2003-8-11' , '2003-8-11 08:55:44')";
-		String sql4 = "INSERT INTO Images(url, description, postUser, postDate, postTime) VALUES('https://cdn.pixabay.com/photo/2016/09/07/11/37/tropical-1651426__340.jpg','mountains', 'cbratton@email.com', '2006-11-11' , '2006-11-11 23:23:35')";
+		String sql4 = "INSERT INTO Images(url, description, postUser, postDate, postTime) VALUES('https://png.pngtree.com/thumb_back/fh260/background/20191026/pngtree-palm-beach-sunset-image_320421.jpg','sunset', 'cbratton@email.com', '2006-11-11' , '2006-11-11 23:23:35')";
 		String sql5 = "INSERT INTO Images(url, description, postUser, postDate, postTime) VALUES('https://earthsky.org/upl/2013/09/sunrise-red-sea-Graham-Telford-e1489764712368.jpg','sunbeam', 'kmalone@email.com', '2007-7-11' , '2007-7-11 12:21:44')";
 		String sql6 = "INSERT INTO Images(url, description, postUser, postDate, postTime)  VALUES('https://www.visitaparadise.com/wp-content/themes/yootheme/cache/sunset-d863fdd4.jpeg','blue reflection', 'amartin@email.com', '1999-1-6' , '1999-1-6 04:03:53')";
 		String sql7 = "INSERT INTO Images(url, description, postUser, postDate, postTime) VALUES('https://llandscapes-10674.kxcdn.com/wp-content/uploads/2015/01/6198521760_aa86027669_z.jpg','snowcapped mountain', 'amartin@email.com', '2020-11-23' , '2020-11-23 11:32:34')";
 		String sql8 = "INSERT INTO Images(url, description, postUser, postDate, postTime) VALUES('https://www.araioflight.com/wp-content/uploads/2019/12/Wild-Beautiful-sunset-in-Africa-with-animals-safari.jpg', 'safari', 'abernard@email.com', '2008-11-11' , '2008-11-11 04:23:24')"; 
-		String sql9 = "INSERT INTO Images(url, description, postUser, postDate, postTime)  VALUES('https://cdn3.dpmag.com/2019/10/shutterstock_1239834655.jpg','beauty in nature', 'abernard@email.com', '2019-11-02' , '2019-11-02 14:35:09')"; 
+		String sql9 = "INSERT INTO Images(url, description, postUser, postDate, postTime)  VALUES('https://cdn3.dpmag.com/2019/10/shutterstock_1239834655.jpg','beauty in nature', 'abernard@email.com', '2019-11-02' , '2019-11-02 14:35:09')";
+		String sql10 = "INSERT INTO Images(url, description, postUser, postDate, postTime) \r\n" + 
+				" 	VALUES('https://i.pinimg.com/originals/66/05/a1/6605a1be5ff2358644d11520ae4b77f8.jpg','awesome',\r\n" + 
+				"			'jhalpert@email.com', CURDATE() , NOW())"; 
 			  
 	    
 		boolean rowInserted0 =statement.executeUpdate(sql0) > 0;
@@ -114,10 +117,11 @@ public class ImageDAO {
     	boolean rowInserted7 =statement.executeUpdate(sql7) > 0;
     	boolean rowInserted8 =statement.executeUpdate(sql8) > 0;
     	boolean rowInserted9 =statement.executeUpdate(sql9) > 0;
+    	boolean rowInserted10 =statement.executeUpdate(sql10) > 0;
     	
     	
     	 return ( rowInserted1 && rowInserted2 && rowInserted3 && rowInserted4 && rowInserted5 
-    			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted0 ); 
+    			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted0 && rowInserted10); 
 	}
 	
 	public List<Image> getImagesPostedByUser(User user) throws SQLException {
@@ -294,6 +298,112 @@ public class ImageDAO {
 		disconnect();
 		return images;
 	}
+	/*
+	 * Cool Images: the images that are liked by at least 5 users. 
+	 */
+	
+	public List<Image> getCoolImages() throws SQLException{
+		List<Image> images = new ArrayList<Image>();
+		
+		connect_func();
+		
+		String sql = "select * \r\n" + 
+				"from images\r\n" + 
+				"where imageID in (\r\n" + 
+				"	select imgID\r\n" + 
+				"	from likes\r\n" + 
+				"	group by imgID\r\n" + 
+				"	having count(*) >=5\r\n" + 
+				")"; 
+
+		preparedStatement = connect.prepareStatement(sql);
+		ResultSet resultSet = preparedStatement.executeQuery();
+        
+        while (resultSet.next()) {
+
+            int imageID = resultSet.getInt("imageID");
+            String url = resultSet.getString("url");
+            String description = resultSet.getString("description");
+            String postUser = resultSet.getString("postUser"); 
+            String postTime = resultSet.getString("postTime");
+             
+            Image image = new Image(imageID, url, description, postUser, postTime); 
+            images.add(image);
+        }      
+        
+		disconnect();
+		return images;
+	}
+	
+	/*
+	 * New Images: those images that are just posted TODAY. 
+	 */
+	
+	public List<Image> getNewImages() throws SQLException{
+		List<Image> images = new ArrayList<Image>();
+		
+		connect_func();
+		
+		String sql = "select * \r\n" + 
+				"from images\r\n" + 
+				"where postDate = CURDATE()";  
+
+		preparedStatement = connect.prepareStatement(sql);
+		ResultSet resultSet = preparedStatement.executeQuery();
+        
+        while (resultSet.next()) {
+
+            int imageID = resultSet.getInt("imageID");
+            String url = resultSet.getString("url");
+            String description = resultSet.getString("description");
+            String postUser = resultSet.getString("postUser"); 
+            String postTime = resultSet.getString("postTime");
+             
+            Image image = new Image(imageID, url, description, postUser, postTime); 
+            images.add(image);
+        }      
+        
+		disconnect();
+		return images;
+	}
+	
+	
+	/*
+	 *  Viral Images: top 3 images who received the most number of likes, from the most to the least. 
+	 */
+	public List<Image> getViralImages() throws SQLException{
+		List<Image> images = new ArrayList<Image>();
+		
+		connect_func();
+		
+		String sql = "select I.*\r\n" + 
+				"from likes L, images I\r\n" + 
+				"where L.imgID = I.imageID\r\n" + 
+				"group by L.imgID \r\n" + 
+				"order by count(*) desc\r\n" + 
+				"limit 3";  
+
+		preparedStatement = connect.prepareStatement(sql);
+		ResultSet resultSet = preparedStatement.executeQuery();
+        
+        while (resultSet.next()) {
+
+            int imageID = resultSet.getInt("imageID");
+            String url = resultSet.getString("url");
+            String description = resultSet.getString("description");
+            String postUser = resultSet.getString("postUser"); 
+            String postTime = resultSet.getString("postTime");
+             
+            Image image = new Image(imageID, url, description, postUser, postTime); 
+            images.add(image);
+        }      
+        
+		disconnect();
+		return images;
+	}
+
+	
+	
 	
 	
 	

@@ -51,14 +51,19 @@ body {background-color: #ffd394;}
     
     <h2 >      
     		
-    		 <a style="margin-right: 20px;"  href="/database-master_database/feed">Feed </a>
+    		<a style="margin-right: 20px;"  href="/database-master_database/feed">Feed </a>
     		 
-	         <a style="margin-right: 20px;" href="/database-master_database/userProfile">User Profile</a>
+	       	<a style="margin-right: 20px;" href="/database-master_database/userProfile">User Profile</a>
 	         
-	          <a  style="margin-right: 20px;" href="/database-master_database/community">Community</a>
+	        <a  style="margin-right: 20px;" href="/database-master_database/community">Community</a>
 	          
-	          
+            <c:if test="${sessionScope.currentUser.email.equals('root')}">
+           
+		    	 <a  style="margin-right: 20px;" href="/database-master_database/admin">Administration</a>
+		    	 
+		    </c:if>                    
  	</h2>
+ 	
  	<legend  align="center"><h2>Feed Page</h2></legend> 
  	
  	 <div align="center">
