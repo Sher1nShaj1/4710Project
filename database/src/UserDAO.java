@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -17,6 +18,7 @@ import java.sql.PreparedStatement;
 //import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 //import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 /**
@@ -340,7 +342,9 @@ public class UserDAO {
         preparedStatement.close();
         return maxPostCount;	
 	}
-	
+
+
+
 	/*
 	 * [Top users]: List users that have the most number of postings.  List the top user if there is no tie,
 	 *  list all the tied top users if there is a tie. 
@@ -387,7 +391,7 @@ public class UserDAO {
 			return users;
 		}
 
-	public List<User> getUserView(String view) throws SQLException {
+	/*public List<User> getUserView(String view) throws SQLException {
 		List<User> listPeople = new ArrayList<User>();
 		String sql = "SELECT * FROM " + view;
 		connect_func();
@@ -402,11 +406,114 @@ public class UserDAO {
 		resultSet.close();
 		disconnect();
 		return listPeople;
+	}*/
+
+	public List<User> commonUsers(String user1, String user2) throws SQLException {
+		List<User> listUsers = new ArrayList<User>();
+		String sql = "SELECT * FROM users WHERE email in ("
+				+ "SELECT DISTINCT followingemail FROM follow WHERE followeremail = ? OR followeremail = ?"
+				+ ")";
+		connect_func();
+		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+		preparedStatement.setString(1, user1);
+		preparedStatement.setString(2, user2);
+		ResultSet resultSet = preparedStatement.executeQuery();
+
+		while (resultSet.next()) {
+			String email = resultSet.getString("email");
+			String password = resultSet.getString("password");
+			String birthday = resultSet.getString("birthday");
+			String firstName = resultSet.getString("firstName");
+			String lastName = resultSet.getString("lastName");
+			String gender = resultSet.getString("gender");
+			int numFollowers = resultSet.getInt("numFollowers");
+			int numFollowing = resultSet.getInt("numFollowing");
+
+			User newUser = new User(email, password, firstName, lastName, gender, birthday, numFollowers, numFollowing);
+			listUsers.add(newUser);
+		}
+		resultSet.close();
+		statement.close();
+		disconnect();
+		return listUsers;
 	}
-	
-	
-	
-	
+
+
+
+	public List<User> positiveUsers() throws SQLException {
+		List<User> listUsers = new ArrayList<User>();
+		String sql = "SELECT * "
+				+ "FROM users u "
+				+ "WHERE ( "
+				+ "SELECT count(*) "
+				+ "FROM likes l "
+				+ "WHERE l.email = u.email AND l.imageid IN( "
+				+ "	SELECT i.imageid "
+				+ "	FROM images i "
+				+ "	WHERE i.postuser in ( "
+				+ "	SELECT followingemail FROM follow WHERE followeremail = u.email))) "
+				+ "= "
+				+ "(SELECT count(i.imageid) "
+				+ "FROM images i "
+				+ "WHERE i.postuser in ( "
+				+ "	SELECT followingemail FROM follow WHERE followeremail = u.email))";
+		connect_func();
+		statement =  (Statement) connect.createStatement();
+		ResultSet resultSet = statement.executeQuery(sql);
+
+		while (resultSet.next()) {
+			String email = resultSet.getString("email");
+			String password = resultSet.getString("password");
+			String birthday = resultSet.getString("birthday");
+			String firstName = resultSet.getString("firstName");
+			String lastName = resultSet.getString("lastName");
+			String gender = resultSet.getString("gender");
+			int numFollowers = resultSet.getInt("numFollowers");
+			int numFollowing = resultSet.getInt("numFollowing");
+
+			User newUser = new User(email, password, firstName, lastName, gender, birthday, numFollowers, numFollowing);
+			listUsers.add(newUser);
+		}
+		resultSet.close();
+		statement.close();
+		disconnect();
+		return listUsers;
+	}
+
+
+
+	public List<User> inactiveUsers() throws SQLException {
+		List<User> listUsers = new ArrayList<User>();
+		String sql = "SELECT * FROM users WHERE email not in ("
+				+ "SELECT distinct(postuser) FROM images "
+				+ "UNION distinct "
+				+ "SELECT distinct(email) FROM likes "
+				+ "UNION distinct "
+				+ "SELECT distinct(followeremail) FROM follow "
+				+ "UNION distinct "
+				+ "SELECT distinct(email) FROM comments)";
+		connect_func();
+		statement =  (Statement) connect.createStatement();
+		ResultSet resultSet = statement.executeQuery(sql);
+
+		while (resultSet.next()) {
+			String email = resultSet.getString("email");
+			String password = resultSet.getString("password");
+			String birthday = resultSet.getString("birthday");
+			String firstName = resultSet.getString("firstName");
+			String lastName = resultSet.getString("lastName");
+			String gender = resultSet.getString("gender");
+			int numFollowers = resultSet.getInt("numFollowers");
+			int numFollowing = resultSet.getInt("numFollowing");
+
+			User newUser = new User(email, password, firstName, lastName, gender, birthday, numFollowers, numFollowing);
+			listUsers.add(newUser);
+		}
+		resultSet.close();
+		statement.close();
+		disconnect();
+		return listUsers;
+	}
 	
 }
 

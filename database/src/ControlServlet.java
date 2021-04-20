@@ -3,6 +3,7 @@ import java.io.PrintWriter;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
  
 import javax.servlet.RequestDispatcher;
@@ -20,7 +21,8 @@ import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
- 
+import java.util.TreeMap;
+
 /**
  * ControllerServlet.java
  * This servlet acts as a page controller for the application, handling all
@@ -146,22 +148,19 @@ public class ControlServlet extends HttpServlet   {
 				showPopularUsers(request, response); 
 				break;
 				case "/admin/commonUsers":
-					getUserList(request, response, "commonUsers");
-					request.setAttribute("view", "Common Users!");
+					commonUsers(request, response);
 					break;
-				case "admin/topTags":
-					getTopTags(request, response);
+				case "/admin/topTags":
+					topTags(request, response);
 					break;
-				case "admin/positiveUsers":
-					getUserList(request, response, "positiveUsers");
-					request.setAttribute("view", "Positive Users!");
+				case "/admin/positiveUsers":
+					positiveUsers(request, response);
 					break;
-				case "admin/inactiveUsers":
-					getUserList(request, response, "inactiveUsers");
-					request.setAttribute("view", "Inactive Users! :(");
+				case "/admin/poorImages":
+					poorImages(request, response);
 					break;
-				case "/poorImages":
-					showPoorImages(request, response, "poorImages");
+				case "/admin/inactiveUsers":
+					inactiveUsers(request, response);
 					break;
 			case "/test":
 				test(request, response); 
@@ -234,7 +233,7 @@ public class ControlServlet extends HttpServlet   {
        dispatcher.forward(request, response);
 	}
 
-	private void getUserList(HttpServletRequest request, HttpServletResponse response, String view) throws SQLException, ServletException, IOException {
+	/*private void getUserList(HttpServletRequest request, HttpServletResponse response, String view) throws SQLException, ServletException, IOException {
 		if (view.equals("commonUsers")) {
 			String userOne = request.getParameter("userOne");
 			String userTwo = request.getParameter("userTwo");
@@ -245,21 +244,77 @@ public class ControlServlet extends HttpServlet   {
 			request.setAttribute("userList", user);
 		}
 		request.getRequestDispatcher("userList.jsp").forward(request, response);
-	}
+	}*/
 
-	public void getTopTags(HttpServletRequest request, HttpServletResponse response) throws SQLException,ServletException, IOException {
+	/*public void getTopTags(HttpServletRequest request, HttpServletResponse response) throws SQLException,ServletException, IOException {
 		List<Tag> tags = tagsDAO.getView();
 		request.setAttribute("tagList", tags);
 		request.getRequestDispatcher("ImageList.jsp").forward(request, response);
-	}
+	}*/
 
-	private void showPoorImages(HttpServletRequest request, HttpServletResponse response, String view) throws ServletException, IOException, SQLException{
+	/*private void showPoorImages(HttpServletRequest request, HttpServletResponse response, String view) throws ServletException, IOException, SQLException{
 		List<Image> images = imageDAO.getRootView(view);
 		request.setAttribute("listImages", images);
 		request.setAttribute("fullUserList", userDAO.getAllUsers());
 		request.getRequestDispatcher("ImageList.jsp").forward(request, response);
+	}*/
+
+	private void commonUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+		List<User> userList = userDAO.commonUsers(request.getParameter("user1"), request.getParameter("user2"));
+		String userListTitle = "Common Users";
+		RequestDispatcher dispatcher = request.getRequestDispatcher("UserList.jsp");
+		request.setAttribute("userList", userList);
+		request.setAttribute("userListTitle", userListTitle);
+		dispatcher.forward(request, response);
 	}
 
+	private void topTags(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+		List<String> imageList = imageDAO.topTags();
+		String imageListTitle = "Top Tag";
+		RequestDispatcher dispatcher = request.getRequestDispatcher("ImageList.jsp");
+		request.setAttribute("imageList", imageList);
+		request.setAttribute("imageListTitle", imageListTitle);
+		dispatcher.forward(request, response);
+	}
+
+	private void positiveUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+		List<User> userList = userDAO.positiveUsers();
+		String userListTitle = "Positive Users";
+		RequestDispatcher dispatcher = request.getRequestDispatcher("UserList.jsp");
+		request.setAttribute("userList", userList );
+		request.setAttribute("userListTitle", userListTitle);
+		dispatcher.forward(request, response);
+	}
+
+	private void poorImages(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+		List<Image> imageList = imageDAO.poorImages();
+		String imageListTitle = "Poor Images";
+		TreeMap<Image, String> imageAndTag = new TreeMap<Image, String>(Collections.reverseOrder());
+		for(int i = 0; i < imageList.size(); i++) {
+			List<String> existingTagsList = imageDAO.getTagsFromSingleImage(imageList.get(i).imgID);
+			StringBuilder existingTags = new StringBuilder();
+			for(String tag : existingTagsList) {
+				existingTags.append(tag);
+				existingTags.append(",");
+			}
+			String existingTagsString = existingTags.length() > 0 ? existingTags.substring(0, existingTags.length() - 1) : "";
+			imageAndTag.put(imageList.get(i), existingTagsString);
+		}
+		RequestDispatcher dispatcher = request.getRequestDispatcher("ImageList.jsp");
+		request.setAttribute("imageList", imageList);
+		request.setAttribute("treemapImageAndTag", imageAndTag);
+		request.setAttribute("imageListTitle", imageListTitle);
+		dispatcher.forward(request, response);
+	}
+
+	private void inactiveUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+		List<User> userList = userDAO.inactiveUsers();
+		String userListTitle = "Positive Users";
+		RequestDispatcher dispatcher = request.getRequestDispatcher("UserList.jsp");
+		request.setAttribute("userList", userList);
+		request.setAttribute("userListTitle", userListTitle);
+		dispatcher.forward(request, response);
+	}
 
 private void showAdminPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub

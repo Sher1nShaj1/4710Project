@@ -187,7 +187,7 @@ public class TagsDAO {
 	        return rowDeleted;     
 	   }
 
-	public List<Tag> getView() throws SQLException{
+	/*public List<Tag> getView() throws SQLException{
 		List<Tag> listTag = new ArrayList<Tag>();
 		String sql = "SELECT * FROM topTags";
 		connect_func();
@@ -204,7 +204,7 @@ public class TagsDAO {
 		resultSet.close();
 		disconnect();
 		return listTag;
-	}
+	}*/
 
 
 

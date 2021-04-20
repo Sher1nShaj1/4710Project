@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -261,7 +262,7 @@ public class ImageDAO {
         return image;	
 	}
 
-	public List<Image> getRootView(String view) throws SQLException{
+	/*public List<Image> getRootView(String view) throws SQLException{
 		List<Image> images = new ArrayList<Image>();
 		connect_func();
 
@@ -292,7 +293,7 @@ public class ImageDAO {
 		disconnect();
 		return images;
 
-	}
+	}*/
 	
 	public List<Image> getFeed(String email) throws SQLException{
 		List<Image> images = new ArrayList<Image>();
@@ -433,8 +434,66 @@ public class ImageDAO {
 		return images;
 	}
 
-	
-	
+	public List<Image> poorImages() throws SQLException {
+		System.out.println("Inside poorImages() in UserDAO");
+		List<Image> listImage = new ArrayList<Image>();
+		connect_func();
+		String sql1 = "SELECT * FROM images I "
+				+ "WHERE I.imageID NOT IN ("
+				+ "(SELECT L.imageID "
+				+ "FROM likes L, images I "
+				+ "WHERE L.imageID = I.imageID) "
+				+ "UNION "
+				+ "(SELECT C.imageID "
+				+ "FROM comments C, images I "
+				+ "WHERE C.imageID = I.imageID))";
+		statement = connect.createStatement();
+		ResultSet resultSet = statement.executeQuery(sql1);
+
+		while(resultSet.next()) {
+			int imageID = resultSet.getInt("imageID");
+			String url = resultSet.getString("url");
+			String description = resultSet.getString("description");
+			String postUser = resultSet.getString("postUser");
+			String postTime = resultSet.getString("postTime");
+			Image newImage = new Image(imageID, url, description, postUser, postTime);
+			listImage.add(newImage);
+			System.out.println("Added an image to listImage in poorImages()");
+		}
+		System.out.println("End poorImages() in UserDAO");
+		return listImage;
+	}
+
+	public List<String> getTagsFromSingleImage(int imageid) throws SQLException {
+		System.out.println("Inside getTagsFromSingleImage");
+		List<String> listTags = new ArrayList<String>();
+		connect_func();
+		String sql1 = "SELECT tag FROM tags WHERE imageID = ?";
+		preparedStatement = connect.prepareStatement(sql1);
+		preparedStatement.setInt(1, imageid);
+		ResultSet resultSet = preparedStatement.executeQuery();
+		while(resultSet.next()) {
+			System.out.println("Got tag, adding to list");
+			listTags.add(resultSet.getString("tag"));
+		}
+		return listTags;
+	}
+
+	public List<String> topTags() throws SQLException {
+		List<String> listTags = new ArrayList<String>();
+		String sql = "SELECT tag FROM tags GROUP BY tag HAVING count(imageID) >= 3";
+		connect_func();
+		statement =  (Statement) connect.createStatement();
+		ResultSet resultSet = statement.executeQuery(sql);
+
+		while (resultSet.next()) {
+			listTags.add(resultSet.getString("tag"));
+		}
+		resultSet.close();
+		statement.close();
+		disconnect();
+		return listTags;
+	}
 	
 	
 	

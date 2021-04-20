@@ -23,18 +23,18 @@ import java.util.List;
  * Servlet implementation class Connect
  */
 @WebServlet("/FollowDAO")
-public class FollowDAO {     
+public class FollowDAO {
 	private static final long serialVersionUID = 1L;
 	private Connection connect = null;
 	private Statement statement = null;
 	private PreparedStatement preparedStatement = null;
 	private ResultSet resultSet = null;
-	
-	
+
+
 	public FollowDAO() throws SQLException {
-		
+
     }
-	       
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -51,45 +51,45 @@ public class FollowDAO {
             System.out.println(connect);
         }
     }
-    
- 
-    
+
+
+
     protected void disconnect() throws SQLException {
         if (connect != null && !connect.isClosed()) {
         	connect.close();
         }
     }
-    
+
     public void dropTable() throws SQLException {
-    	connect_func();   
-    	statement = connect.createStatement();   	
+    	connect_func();
+    	statement = connect.createStatement();
     	String sql4 = "DROP TABLE IF EXISTS Follows";
     	statement.executeUpdate(sql4);
     }
-         
+
     public int createTable() throws SQLException {
-    	connect_func();   
+    	connect_func();
     	statement = connect.createStatement();
-    	String sql5 = "CREATE TABLE IF NOT EXISTS Follows (\r\n" + 
-    			"	followingEmail VARCHAR(100) NOT NULL,\r\n" + 
-    			"    followerEmail VARCHAR(100) NOT NULL,\r\n" + 
-    			"    PRIMARY KEY(followingEmail, followerEmail),\r\n" + 
-    			"    FOREIGN KEY(followingEmail) REFERENCES Users(email),\r\n" + 
-    			"    FOREIGN KEY (followerEmail) REFERENCES Users (email))"; 
-    	
-    	
-    	
+    	String sql5 = "CREATE TABLE IF NOT EXISTS Follows (\r\n" +
+    			"	followingEmail VARCHAR(100) NOT NULL,\r\n" +
+    			"    followerEmail VARCHAR(100) NOT NULL,\r\n" +
+    			"    PRIMARY KEY(followingEmail, followerEmail),\r\n" +
+    			"    FOREIGN KEY(followingEmail) REFERENCES Users(email),\r\n" +
+    			"    FOREIGN KEY (followerEmail) REFERENCES Users (email))";
+
+
+
     	int rowsInserted = statement.executeUpdate(sql5);
     	 if (statement != null) {
     	        statement.close();
     	 }
         return rowsInserted;
     }
-    
+
     public boolean fillTable() throws SQLException {
-    	connect_func();  
+    	connect_func();
     	statement = connect.createStatement();
-    	
+
 
     	String sql1 = "INSERT INTO Follows(followingEmail, followerEmail) VALUES('jhalpert@email.com', 'cbratton@email.com')";
     	String sql2 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('pbeesly@email.com', 'kmalone@email.com')";
@@ -100,12 +100,12 @@ public class FollowDAO {
     	String sql7 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('amartin@email.com','mscott@email.com' )";
     	String sql8 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('mscott@email.com', 'kmalone@email.com')";
     	String sql9 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('cbratton@email.com', 'mscott@email.com')";
-    	String sql10 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('kkapoor@email.com', 'cbratton@email.com')"; 
-    	String sql11 = "INSERT INTO Follows(followingEmail, followerEmail) VALUES('kkapoor@email.com', 'pbeesly@email.com')"; 
-    	String sql12 = "INSERT INTO Follows(followingEmail, followerEmail) VALUES('kkapoor@email.com', 'mscott@email.com')" ; 
-    	
-    	
-    		
+    	String sql10 = "INSERT INTO Follows(followingEmail, followerEmail)  VALUES('kkapoor@email.com', 'cbratton@email.com')";
+    	String sql11 = "INSERT INTO Follows(followingEmail, followerEmail) VALUES('kkapoor@email.com', 'pbeesly@email.com')";
+    	String sql12 = "INSERT INTO Follows(followingEmail, followerEmail) VALUES('kkapoor@email.com', 'mscott@email.com')" ;
+
+
+
     	boolean rowInserted1 = statement.executeUpdate(sql1) > 0;
     	boolean rowInserted2 =statement.executeUpdate(sql2) > 0;
     	boolean rowInserted3 =statement.executeUpdate(sql3) > 0;
@@ -118,11 +118,11 @@ public class FollowDAO {
     	boolean rowInserted10 =statement.executeUpdate(sql10) > 0;
     	boolean rowInserted11 =statement.executeUpdate(sql11) > 0;
     	boolean rowInserted12 =statement.executeUpdate(sql12) > 0;
-    	
-    	 return ( rowInserted1 && rowInserted2 && rowInserted3 && rowInserted4 && rowInserted5 
-    			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted10 && rowInserted11 && rowInserted12); 
+
+    	 return ( rowInserted1 && rowInserted2 && rowInserted3 && rowInserted4 && rowInserted5
+    			 && rowInserted6 && rowInserted7 && rowInserted8 && rowInserted9 && rowInserted10 && rowInserted11 && rowInserted12);
     }
-    
+
 
 	public void insert(String currentUserEmail, String otherUserEmail) throws SQLException {
 		String sql = "INSERT into follows(followingEmail, followerEmail) values (?, ?)";
@@ -152,33 +152,33 @@ public class FollowDAO {
 
 		disconnect();
 	}
-	
-	
+
+
 	public List<String> getFollowersEmails(String email) throws SQLException{
-		
-		connect_func(); 
-    	
-    	String sql = "SELECT * \r\n" + 
-	    			"FROM Follows\r\n" + 
-	    			"WHERE followingEmail = ?"; 
-		
+
+		connect_func();
+
+    	String sql = "SELECT * \r\n" +
+	    			"FROM Follows\r\n" +
+	    			"WHERE followingEmail = ?";
+
 		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
 		preparedStatement.setString(1, email);
 
 		ResultSet resultSet = preparedStatement.executeQuery();
-		
-		List<String> followerList = new ArrayList<>(); 
+
+		List<String> followerList = new ArrayList<>();
         while (resultSet.next()) {
              String followerEmail = resultSet.getString("followerEmail");
-         
-             followerList.add(followerEmail);  
-        }      
+
+             followerList.add(followerEmail);
+        }
         disconnect();
         preparedStatement.close();
-        return followerList;	
+        return followerList;
 	}
 
-	public List<String> commonUsers(String userOne, String userTwo) throws SQLException{
+	/*public List<String> commonUsers(String userOne, String userTwo) throws SQLException{
 		List<String> list = new ArrayList<String>();
 		String sql =  "select followingEmail "
 				+ "from Follows f1 "
@@ -198,7 +198,7 @@ public class FollowDAO {
 		disconnect();
 		results.close();
 		return list;
-	}
+	}*/
 	
 	 public boolean isUserFollowedByCurrentUser(String currentUserEmail, String otherUserEmail) throws SQLException {
 	    	
